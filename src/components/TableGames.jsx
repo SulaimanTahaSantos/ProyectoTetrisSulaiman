@@ -9,11 +9,11 @@ import Form from 'react-bootstrap/Form';
 
 const TableGames = () => {
   // Array de juegos
-  const partidas = [
-    { id: 1, name: "zulaiman" , title: "Game 1", point: 1200, releaseDate: "2021-01-01" },
-    { id: 2, name: "Sulaiman" , title: "Game 2", point: 1400, releaseDate: "2020-12-31" },
-    { id: 3, name: "aulaiman" , title: "Game 3", point: 1600, releaseDate: "2020-11-30" },
-  ];
+  const [partidas, setPartidas] = useState([
+    { id: 1, name: "zulaiman", title: "Game 1", point: 1200, releaseDate: "2021-01-01" },
+    { id: 2, name: "Sulaiman", title: "Game 2", point: 1400, releaseDate: "2020-12-31" },
+    { id: 3, name: "aulaiman", title: "Game 3", point: 1600, releaseDate: "2020-11-30" },
+  ]);
 
   // Estado para ordenar columnas
 
@@ -62,6 +62,22 @@ const TableGames = () => {
         setShowModal(false);
     }
 
+    // Ahora haremos que se actualice la array a traves del formulario
+
+   const handleAddGame = (e) => {
+    e.preventDefault();
+    setShowModal(false);
+
+    const newGame = {
+      id: parseInt(e.target.id.value), 
+      name: e.target.name.value,
+      title: e.target.title.value,
+      point: parseInt(e.target.point.value), 
+      releaseDate: e.target.releaseDate.value,
+    };
+    setPartidas((prevPartidas) => [...prevPartidas, newGame]);
+  };
+
    return (
     <div>
         <Button variant="outline-success" onClick={handleShowModal}>
@@ -73,30 +89,30 @@ const TableGames = () => {
         </Modal.Header>
         <Modal.Body>
 
-            <Form>
-      <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form onSubmit={handleAddGame}>
+      <Form.Group className="mb-3" controlId="id">
         <Form.Label>Id</Form.Label>
         <Form.Control type="number" placeholder="Enter id" />
        
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
+      <Form.Group className="mb-3" controlId="name">
         <Form.Label>Name</Form.Label>
         <Form.Control type="text" placeholder="Name" />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicPassword">
+      <Form.Group className="mb-3" controlId="title">
         <Form.Label>Games</Form.Label>
         <Form.Control type="text" placeholder="Games" />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicPassword">
+      <Form.Group className="mb-3" controlId="point">
         <Form.Label>Points</Form.Label>
         <Form.Control type="number" placeholder="Points" />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicPassword">
+      <Form.Group className="mb-3" controlId="releaseDate">
         <Form.Label>Release Date</Form.Label>
         <Form.Control type="date" placeholder="Date for game" />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" >
         Submit
       </Button>
     </Form>
