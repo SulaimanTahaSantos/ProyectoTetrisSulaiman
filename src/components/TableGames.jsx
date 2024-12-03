@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { Table } from "react-bootstrap";
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+
+
+
 
 const TableGames = () => {
   // Array de juegos
@@ -15,6 +21,9 @@ const TableGames = () => {
     key: "id",
     direction: "ascending",
   });
+
+  // Estado para abrir modal
+  const [showModal, setShowModal] = useState(false);
 
     // Función para ordenar columnas
     const handleSort = (key) => {
@@ -45,8 +54,62 @@ const TableGames = () => {
     return '';
   };
 
+  // Modal para agregar juego
+    const handleShowModal = () => {
+        setShowModal(true);
+    }
+    const handleCloseModal = () => {
+        setShowModal(false);
+    }
+
    return (
     <div>
+        <Button variant="outline-success" onClick={handleShowModal}>
+            Add Game
+        </Button>
+          <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Game</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+
+            <Form>
+      <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form.Label>Id</Form.Label>
+        <Form.Control type="number" placeholder="Enter id" />
+       
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Name</Form.Label>
+        <Form.Control type="text" placeholder="Name" />
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Games</Form.Label>
+        <Form.Control type="text" placeholder="Games" />
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Points</Form.Label>
+        <Form.Control type="number" placeholder="Points" />
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Label>Release Date</Form.Label>
+        <Form.Control type="date" placeholder="Date for game" />
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Submit
+      </Button>
+    </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleCloseModal}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Table striped bordered hover>
         <thead>
           <tr>
