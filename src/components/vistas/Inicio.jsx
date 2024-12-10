@@ -1,10 +1,14 @@
 import React from "react";
 import { Container, Row, Col, Card, ListGroup, Button, Image } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import AppMenu from "../AppMenu";
 
 const Inicio = () => {
   return (
+    <>
+     <AppMenu/>
     <Container className="py-5">
+      
       <Row className="justify-content-center">
         <Col xs={12} md={8} lg={6}>
           <Card className="shadow-lg">
@@ -49,6 +53,8 @@ const Inicio = () => {
         </Col>
       </Row>
     </Container>
+    </>
+   
   );
 }
 

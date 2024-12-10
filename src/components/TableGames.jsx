@@ -3,9 +3,7 @@ import { Table } from "react-bootstrap";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-
-
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const TableGames = () => {
   // Array de juegos
@@ -79,8 +77,8 @@ const TableGames = () => {
   };
 
    return (
-    <div>
-        <Button variant="outline-success" onClick={handleShowModal}>
+    <div >
+        <Button className="mt-3 mb-4" variant="outline-success" onClick={handleShowModal}>
             Add Game
         </Button>
           <Modal show={showModal} onHide={handleCloseModal}>
@@ -89,7 +87,7 @@ const TableGames = () => {
         </Modal.Header>
         <Modal.Body>
 
-        <Form onSubmit={handleAddGame}>
+      <Form onSubmit={handleAddGame}>
       <Form.Group className="mb-3" controlId="id">
         <Form.Label>Id</Form.Label>
         <Form.Control type="number" placeholder="Enter id" />
