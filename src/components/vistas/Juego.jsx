@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import AppMenu from '../AppMenu';
+import modelos from '../../lib/modelos';
 
 const Juego = () => {
+    const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz)
   return (
     <>
       <AppMenu />
@@ -24,8 +26,6 @@ const Juego = () => {
               
             }}
           >
-            {/* Aquí mostraremos la lógica del juego */}
-           
           </div>
         </div>
       </Container>
