@@ -1,20 +1,19 @@
-// components/Panel.jsx
 import React from 'react';
 
-const Panel = ({ grid }) => {
+const Pieza = ({ rotacion }) => {
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateRows: 'repeat(21, 1fr)', 
-        gridTemplateColumns: 'repeat(12, 1fr)', 
-        width: '360px',
-        height: '660px',
+        gridTemplateRows: `repeat(${rotacion.length}, 1fr)`, 
+        gridTemplateColumns: `repeat(${rotacion[0].length}, 1fr)`, 
+        width: '120px', 
+        height: '120px',
         border: '2px solid black',
         backgroundColor: 'lightgray',
       }}
     >
-      {grid.map((row, rowIndex) =>
+      {rotacion.map((row, rowIndex) =>
         row.map((cell, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
@@ -31,4 +30,4 @@ const Panel = ({ grid }) => {
   );
 };
 
-export default Panel;
+export default Pieza;
