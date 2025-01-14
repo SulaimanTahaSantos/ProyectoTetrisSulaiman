@@ -1,4 +1,5 @@
 import React from 'react';
+import colorPieza from '../lib/colorPieza';
 
 const Pieza = ({ rotacion }) => {
   return (
@@ -16,12 +17,11 @@ const Pieza = ({ rotacion }) => {
       {rotacion.map((row, rowIndex) =>
         row.map((cell, colIndex) => (
           <div
+            className={`border ${cell === 0 ? 'bg-white' : colorPieza(cell)}`} 
             key={`${rowIndex}-${colIndex}`}
             style={{
               width: '100%',
               height: '100%',
-              border: '1px solid #ccc',
-              backgroundColor: cell === 0 ? 'white' : 'blue', // Cambiar color según el valor de la celda
             }}
           />
         ))

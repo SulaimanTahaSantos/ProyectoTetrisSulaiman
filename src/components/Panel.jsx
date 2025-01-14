@@ -1,5 +1,5 @@
-// components/Panel.jsx
 import React from 'react';
+import colorPieza from '../lib/colorPieza';
 
 const Panel = ({ grid }) => {
   return (
@@ -18,11 +18,10 @@ const Panel = ({ grid }) => {
         row.map((cell, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
+            className={`border ${cell === 0 ? 'bg-white' : colorPieza(cell)}`} // Usamos colorPieza para obtener la clase de Bootstrap
             style={{
               width: '100%',
               height: '100%',
-              border: '1px solid #ccc',
-              backgroundColor: cell === 0 ? 'white' : 'blue', // Cambiar color según el valor de la celda
             }}
           />
         ))
