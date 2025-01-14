@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Asegúrate de que sea `Routes` y no `Switch`
-import Inicio from './components/vistas/Inicio';
-import Juego from './components/vistas/Juego';
-import Partidas from './components/vistas/Partidas';
-import Ranking from './components/vistas/Ranking';
+import Inicio from './components/views/Inicio';
+import Juego from './components/views/Juego';
+import Partidas from './components/views/Partidas';
+import Ranking from './components/views/Ranking';
 
 function App() {
   return (
