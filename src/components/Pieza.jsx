@@ -6,9 +6,9 @@ const Pieza = ({ rotacion }) => {
     <div
       style={{
         display: 'grid',
-        gridTemplateRows: `repeat(${rotacion.length}, 1fr)`, 
-        gridTemplateColumns: `repeat(${rotacion[0].length}, 1fr)`, 
-        width: '120px', 
+        gridTemplateRows: `repeat(${rotacion.length}, 1fr)`,
+        gridTemplateColumns: `repeat(${rotacion[0].length}, 1fr)`,
+        width: '120px',
         height: '120px',
         border: '2px solid black',
         backgroundColor: 'lightgray',
@@ -17,8 +17,8 @@ const Pieza = ({ rotacion }) => {
       {rotacion.map((row, rowIndex) =>
         row.map((cell, colIndex) => (
           <div
-            className={`border ${cell === 0 ? 'bg-white' : colorPieza(cell)}`} 
             key={`${rowIndex}-${colIndex}`}
+            className={`border ${cell === 0 ? 'bg-white' : colorPieza(cell)}`} // Asegúrate de que la interpolación esté bien hecha
             style={{
               width: '100%',
               height: '100%',

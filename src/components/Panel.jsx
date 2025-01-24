@@ -18,7 +18,7 @@ const Panel = ({ grid }) => {
         row.map((cell, colIndex) => (
           <div
             key={`${rowIndex}-${colIndex}`}
-            className={`border ${cell === 0 ? 'bg-white' : colorPieza(cell)}`} // Usamos colorPieza para obtener la clase de Bootstrap
+            className={`border ${cell === 0 ? 'bg-white' : colorPieza(cell)}`} // Asegúrate de que la interpolación esté bien hecha
             style={{
               width: '100%',
               height: '100%',

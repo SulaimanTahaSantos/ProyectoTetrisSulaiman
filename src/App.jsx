@@ -10,9 +10,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Inicio />} />
-        <Route path="/Juego" element={<Juego />} />
-        <Route path="/Partidas" element={<Partidas />} />
-        <Route path="/Ranking" element={<Ranking />} />
+        <Route path="./components/views/Juego.jsx" element={<Juego />} />
+        <Route path="./components/views/Partidas.jsx" element={<Partidas />} />
+        <Route path="./components/views/Ranking.jsx" element={<Ranking />} />
       </Routes>
     </Router>
   );
