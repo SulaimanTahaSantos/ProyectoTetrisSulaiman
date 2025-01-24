@@ -2,16 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import AppMenu from '../AppMenu';
 import Panel from '../Panel';
-import Pieza from '../Pieza';
-import modelos from '../../lib/modelos';  
+import modelos from '../../lib/modelos';
+import nuevaPieza from '../../lib/nuevaPieza';  
 
 const Juego = () => {
-  const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz); 
-  const [piezasAleatorias, setPiezasAleatorias] = useState([]);
+  const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
+  
+  const [piezaActual, setPiezaActual] = useState(() => {
+    const columnaAleatoria = Math.floor(Math.random() * 9) + 1; 
+    return nuevaPieza(0, columnaAleatoria); 
+  });
 
-  const generarPiezaAleatoria = () => {
-    const piezaAleatoria = modelos.piezas[Math.floor(Math.random() * modelos.piezas.length)];
-    setPiezasAleatorias([...piezasAleatorias, piezaAleatoria]);
+  const pintarPieza = () => {
+    if (!piezaActual || !piezaActual.matriz) return; 
+
+    const newArray = [...arrayCasillas];
+
+    piezaActual.matriz.forEach((fila, filaIndex) => {
+      fila.forEach((columna, columnaIndex) => {
+        if (columna !== 0) { 
+          const filaPos = piezaActual.fila + filaIndex;
+          const columnaPos = piezaActual.columna + columnaIndex;
+
+          if (filaPos >= 0 && filaPos < newArray.length && columnaPos >= 0 && columnaPos < newArray[0].length) {
+            newArray[filaPos][columnaPos] = columna;  
+          }
+        }
+      });
+    });
+
+    setArrayCasillas(newArray); 
+  };
+
+  const insertaNuevaPieza = () => {
+    pintarPieza(); 
   };
 
   return (
@@ -23,17 +47,9 @@ const Juego = () => {
         <Panel grid={arrayCasillas} />  
 
         <div>
-          <Button onClick={generarPiezaAleatoria} className="mt-3">
-            Generar pieza aleatoria
+          <Button onClick={insertaNuevaPieza} className="mt-3">
+            Insertar pieza
           </Button>
-          <div className="mt-4">
-            {piezasAleatorias.map((pieza, index) => (
-              <div key={index}>
-                <h3>{pieza.nombre} (Ángulo: {pieza.rotaciones[0]})</h3>
-                <Pieza rotacion={pieza.rotaciones[0]} /> 
-              </div>
-            ))}
-          </div>
         </div>
       </Container>
     </>

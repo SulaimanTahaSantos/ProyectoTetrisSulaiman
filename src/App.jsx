@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Asegúrate de que sea `Routes` y no `Switch`
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Inicio from './components/views/Inicio';
 import Juego from './components/views/Juego';
 import Partidas from './components/views/Partidas';
@@ -10,9 +10,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Inicio />} />
-        <Route path="./components/views/Juego.jsx" element={<Juego />} />
-        <Route path="./components/views/Partidas.jsx" element={<Partidas />} />
-        <Route path="./components/views/Ranking.jsx" element={<Ranking />} />
+        <Route path="/Juego" element={<Juego />} />
+        <Route path="/Partidas" element={<Partidas />} />
+        <Route path="/Ranking" element={<Ranking />} />
       </Routes>
     </Router>
   );
