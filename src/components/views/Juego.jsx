@@ -38,6 +38,42 @@ const Juego = () => {
     pintarPieza(); 
   };
 
+  const moverDra = () => {
+    console.log("Mover a la derecha")
+  }
+  const moverIzq = () => {
+    console.log("Mover a la izquierda")
+  }
+  const bajar = () => {
+    console.log("Bajar")
+
+  }
+
+ 
+
+   const controlTeclas = (event) => {
+    switch (event.key) {
+      case 'ArrowRight':
+        moverDra();
+        break;
+      case 'ArrowLeft':
+        moverIzq();
+        break;
+      case 'ArrowDown':
+        bajar();
+        break;
+      case 'ArrowUp':
+        piezaActual.girar();
+        break;
+      default:
+        break;
+    }
+  };
+  
+
+
+  
+
   return (
     <>
       <AppMenu />
