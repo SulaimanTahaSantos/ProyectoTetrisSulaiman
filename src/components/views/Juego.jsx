@@ -40,9 +40,21 @@ const Juego = () => {
 
   const moverDra = () => {
     console.log("Mover a la derecha")
+    setPiezaActual(antes => {
+      if (antes.columna < arrayCasillas[0].length - antes.matriz[0].length) {
+        return { ...antes, columna: antes.columna + 1 };
+      }
+      return antes;
+    });
   }
   const moverIzq = () => {
     console.log("Mover a la izquierda")
+    setPiezaActual(antes => {
+      if (antes.columna > 0) {
+        return { ...antes, columna: antes.columna - 1 };
+      }
+      return antes;
+    });
   }
  const bajar = () => {
   console.log("Bajar")
