@@ -3,7 +3,9 @@ import { Container, Button } from 'react-bootstrap';
 import AppMenu from '../AppMenu';
 import Panel from '../Panel';
 import modelos from '../../lib/modelos';
-import nuevaPieza from '../../lib/nuevaPieza';  
+import nuevaPieza from '../../lib/nuevaPieza';
+import { useDebounce } from 'use-debounce';
+
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
@@ -12,6 +14,8 @@ const Juego = () => {
     const columnaAleatoria = Math.floor(Math.random() * 9) + 1; 
     return nuevaPieza(0, columnaAleatoria); 
   });
+  const [iniciar, setIniciar] = useState(false);
+  const [debouncedIniciar] = useDebounce(iniciar, 1000);
 
   const pintarPieza = () => {
     if (!piezaActual || !piezaActual.matriz) return; 
@@ -66,6 +70,15 @@ const Juego = () => {
     });
     pintarPieza();
   };
+  const iniciarMovimiento = () => {
+    setIniciar(true);
+  }
+
+  useEffect(() => {
+    if(debouncedIniciar) {
+      bajar();
+    }
+  },[debouncedIniciar]);
 
  
 
@@ -103,6 +116,9 @@ const Juego = () => {
         <div>
           <Button onClick={insertaNuevaPieza} className="mt-3">
             Insertar pieza
+          </Button>
+          <Button onClick={iniciarMovimiento} className="mt-3">
+            JUGAR
           </Button>
         </div>
       </Container>
