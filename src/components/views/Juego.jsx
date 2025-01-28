@@ -1,122 +1,170 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Button } from 'react-bootstrap';
-import AppMenu from '../AppMenu';
-import Panel from '../Panel';
-import modelos from '../../lib/modelos';
-import nuevaPieza from '../../lib/nuevaPieza';
-import { useDebounce } from 'use-debounce';
-
+import React, { useState, useEffect } from "react";
+import { Container, Button } from "react-bootstrap";
+import AppMenu from "../AppMenu";
+import Panel from "../Panel";
+import modelos from "../../lib/modelos";
+import nuevaPieza from "../../lib/nuevaPieza";
+import modeloPieza from "../../lib/class/modeloPieza";
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
-  
   const [piezaActual, setPiezaActual] = useState(() => {
-    const columnaAleatoria = Math.floor(Math.random() * 9) + 1; 
-    return nuevaPieza(0, columnaAleatoria); 
+    const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
+    return nuevaPieza(0, columnaAleatoria);
   });
-  const [iniciar, setIniciar] = useState(false);
-  const [debouncedIniciar] = useDebounce(iniciar, 1000);
 
-  const pintarPieza = () => {
-    if (!piezaActual || !piezaActual.matriz) return; 
+  const validarMovimiento = (pieza) => {
+    return pieza.matriz.every((fila, filaIndex) =>
+      fila.every((columna, columnaIndex) => {
+        if (columna === 0) return true;
+        const filaPos = pieza.fila + filaIndex;
+        const columnaPos = pieza.columna + columnaIndex;
+        return (
+          filaPos >= 0 &&
+          filaPos < arrayCasillas.length &&
+          columnaPos >= 0 &&
+          columnaPos < arrayCasillas[0].length &&
+          arrayCasillas[filaPos][columnaPos] === 0
+        );
+      })
+    );
+  };
+
+  const pintarPieza = (pieza) => {
+    if (!pieza || !pieza.matriz) return;
 
     const newArray = [...arrayCasillas];
-
-    piezaActual.matriz.forEach((fila, filaIndex) => {
+    pieza.matriz.forEach((fila, filaIndex) => {
       fila.forEach((columna, columnaIndex) => {
-        if (columna !== 0) { 
-          const filaPos = piezaActual.fila + filaIndex;
-          const columnaPos = piezaActual.columna + columnaIndex;
-
-          if (filaPos >= 0 && filaPos < newArray.length && columnaPos >= 0 && columnaPos < newArray[0].length) {
-            newArray[filaPos][columnaPos] = columna;  
+        if (columna !== 0) {
+          const filaPos = pieza.fila + filaIndex;
+          const columnaPos = pieza.columna + columnaIndex;
+          if (
+            filaPos >= 0 &&
+            filaPos < newArray.length &&
+            columnaPos >= 0 &&
+            columnaPos < newArray[0].length
+          ) {
+            newArray[filaPos][columnaPos] = columna;
           }
         }
       });
     });
 
-    setArrayCasillas(newArray); 
+    setArrayCasillas(newArray);
   };
 
-  const insertaNuevaPieza = () => {
-    pintarPieza(); 
+  const borrarPieza = (pieza) => {
+    const newArray = [...arrayCasillas];
+    pieza.matriz.forEach((fila, filaIndex) => {
+      fila.forEach((columna, columnaIndex) => {
+        if (columna !== 0) {
+          const filaPos = pieza.fila + filaIndex;
+          const columnaPos = pieza.columna + columnaIndex;
+          if (
+            filaPos >= 0 &&
+            filaPos < newArray.length &&
+            columnaPos >= 0 &&
+            columnaPos < newArray[0].length
+          ) {
+            newArray[filaPos][columnaPos] = 0;
+          }
+        }
+      });
+    });
+
+    setArrayCasillas(newArray);
+  };
+
+  const actualizarPieza = (nuevaPieza) => {
+    borrarPieza(piezaActual);
+    if (validarMovimiento(nuevaPieza)) {
+      setPiezaActual(nuevaPieza);
+      pintarPieza(nuevaPieza);
+    } else {
+      pintarPieza(piezaActual);
+    }
+  };
+
+  const girar = () => {
+    const nueva = new modeloPieza(
+      piezaActual.numero,
+      piezaActual.fila,
+      piezaActual.columna
+    );
+    nueva.girar();
+    actualizarPieza(nueva);
+  };
+
+  const moverIzq = () => {
+    const nueva = new modeloPieza(
+      piezaActual.numero,
+      piezaActual.fila,
+      piezaActual.columna - 1
+    );
+    actualizarPieza(nueva);
   };
 
   const moverDra = () => {
-    console.log("Mover a la derecha")
-    setPiezaActual(antes => {
-      if (antes.columna < arrayCasillas[0].length - antes.matriz[0].length) {
-        return { ...antes, columna: antes.columna + 1 };
-      }
-      return antes;
-    });
-  }
-  const moverIzq = () => {
-    console.log("Mover a la izquierda")
-    setPiezaActual(antes => {
-      if (antes.columna > 0) {
-        return { ...antes, columna: antes.columna - 1 };
-      }
-      return antes;
-    });
-  }
- const bajar = () => {
-  console.log("Bajar")
-    setPiezaActual(antes => {
-      if (antes.fila < arrayCasillas.length - antes.matriz.length) {
-        return { ...antes, fila: antes.fila + 1 };
-      }
-      return antes;
-    });
-    pintarPieza();
+    const nueva = new modeloPieza(
+      piezaActual.numero,
+      piezaActual.fila,
+      piezaActual.columna + 1
+    );
+    actualizarPieza(nueva);
   };
-  const iniciarMovimiento = () => {
-    setIniciar(true);
-  }
 
-  useEffect(() => {
-    if(debouncedIniciar) {
-      bajar();
+  const bajar = () => {
+    const nueva = new modeloPieza(
+      piezaActual.numero,
+      piezaActual.fila + 1,
+      piezaActual.columna
+    );
+    console.log("He bajado de fila")
+    if (validarMovimiento(nueva)) {
+      actualizarPieza(nueva);
+    } else {
+      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
     }
-  },[debouncedIniciar]);
+  };
 
- 
+  const iniciarMovimiento = () => {
+    setInterval(bajar, 300);
+  };
 
-   const controlTeclas = (event) => {
-    switch (event.key) {
-      case 'ArrowRight':
-        moverDra();
+  const controlTeclas = (e) => {
+    switch (e.key) {
+      case "ArrowUp":
+        girar();
         break;
-      case 'ArrowLeft':
-        moverIzq();
-        break;
-      case 'ArrowDown':
+      case "ArrowDown":
         bajar();
         break;
-      case 'ArrowUp':
-        piezaActual.girar();
+      case "ArrowLeft":
+        moverIzq();
+        break;
+      case "ArrowRight":
+        moverDra();
         break;
       default:
         break;
     }
   };
-  
 
-
-  
+  useEffect(() => {
+    window.addEventListener("keydown", controlTeclas);
+    return () => {
+      window.removeEventListener("keydown", controlTeclas);
+    };
+  }, [piezaActual, arrayCasillas]);
 
   return (
     <>
       <AppMenu />
       <Container>
         <h1 className="mt-5">Juego</h1>
-
-        <Panel grid={arrayCasillas} />  
-
+        <Panel grid={arrayCasillas} />
         <div>
-          <Button onClick={insertaNuevaPieza} className="mt-3">
-            Insertar pieza
-          </Button>
           <Button onClick={iniciarMovimiento} className="mt-3">
             JUGAR
           </Button>
