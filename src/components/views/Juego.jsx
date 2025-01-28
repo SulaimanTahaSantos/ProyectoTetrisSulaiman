@@ -44,10 +44,16 @@ const Juego = () => {
   const moverIzq = () => {
     console.log("Mover a la izquierda")
   }
-  const bajar = () => {
-    console.log("Bajar")
-
-  }
+ const bajar = () => {
+  console.log("Bajar")
+    setPiezaActual(antes => {
+      if (antes.fila < arrayCasillas.length - antes.matriz.length) {
+        return { ...antes, fila: antes.fila + 1 };
+      }
+      return antes;
+    });
+    pintarPieza();
+  };
 
  
 

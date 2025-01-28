@@ -14,6 +14,8 @@ class modeloPieza {
         this.angulo = (this.angulo + 1) % 4;
         this.matriz = modelos.piezas[this.numero].rotaciones[this.angulo];
     }
+
+
 }
 
 export default modeloPieza;
