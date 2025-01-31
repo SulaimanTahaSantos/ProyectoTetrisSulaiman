@@ -76,15 +76,6 @@ const Juego = () => {
     setArrayCasillas(newArray);
   };
 
-  const actualizarPieza = (nuevaPieza) => {
-    borrarPieza(piezaActual);
-    if (validarMovimiento(nuevaPieza)) {
-      setPiezaActual(nuevaPieza);
-      pintarPieza(nuevaPieza);
-    } else {
-      pintarPieza(piezaActual);
-    }
-  };
 
   const girar = () => {
     const nueva = new modeloPieza(
@@ -114,23 +105,45 @@ const Juego = () => {
     actualizarPieza(nueva);
   };
 
-  const bajar = () => {
+  const actualizarPieza = (nuevaPieza) => {
+    borrarPieza(piezaActual);
+    if (validarMovimiento(nuevaPieza)) {
+      setPiezaActual(nuevaPieza);
+      pintarPieza(nuevaPieza);
+    } else {
+      pintarPieza(piezaActual);
+    }
+  };
+
+  
+
+ useEffect(() => {
+  const intervalId = setInterval(() => {
     const nueva = new modeloPieza(
       piezaActual.numero,
       piezaActual.fila + 1,
       piezaActual.columna
     );
-    console.log("He bajado de fila")
     if (validarMovimiento(nueva)) {
       actualizarPieza(nueva);
     } else {
       setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
     }
+  }, 500);
+
+  return () => clearInterval(intervalId);
+}, [piezaActual]);
+
+
+  const bajar = () => {
+    const nueva = new modeloPieza(
+      piezaActual.numero,
+      piezaActual.fila +1 ,
+      piezaActual.columna
+    );
+    actualizarPieza(nueva);
   };
 
-  const iniciarMovimiento = () => {
-    setInterval(bajar, 300);
-  };
 
   const controlTeclas = (e) => {
     switch (e.key) {
@@ -139,6 +152,7 @@ const Juego = () => {
         break;
       case "ArrowDown":
         bajar();
+        console.log("Has pulsado la tecla arrowdown")
         break;
       case "ArrowLeft":
         moverIzq();
@@ -165,8 +179,8 @@ const Juego = () => {
         <h1 className="mt-5">Juego</h1>
         <Panel grid={arrayCasillas} />
         <div>
-          <Button onClick={iniciarMovimiento} className="mt-3">
-            JUGAR
+          <Button className="mt-3" disabled>
+            JUGAR (Inicia Automáticamente)
           </Button>
         </div>
       </Container>
