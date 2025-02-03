@@ -8,27 +8,38 @@ import modeloPieza from "../../lib/class/modeloPieza";
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
-  const [piezaActual, setPiezaActual] = useState(() => {
-    const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
-    return nuevaPieza(0, columnaAleatoria);
-  });
+const [piezaActual, setPiezaActual] = useState(() => {
+  const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
+  const piezaGenerada = nuevaPieza(0, columnaAleatoria);
 
-  const validarMovimiento = (pieza) => {
-    return pieza.matriz.every((fila, filaIndex) =>
-      fila.every((columna, columnaIndex) => {
-        if (columna === 0) return true;
-        const filaPos = pieza.fila + filaIndex;
-        const columnaPos = pieza.columna + columnaIndex;
-        return (
-          filaPos >= 0 &&
-          filaPos < arrayCasillas.length &&
-          columnaPos >= 0 &&
-          columnaPos < arrayCasillas[0].length &&
-          arrayCasillas[filaPos][columnaPos] === 0
-        );
-      })
-    );
-  };
+  if (!piezaGenerada || !piezaGenerada.matriz) {
+    console.error("La pieza no tiene una matriz válida.");
+    return {}; 
+  }
+
+  return piezaGenerada;
+});
+
+  const [tiempoRestante, setTiempoRestante] = useState(2500); 
+
+const validarMovimiento = (pieza) => {
+  if (!pieza || !pieza.matriz) return false;
+
+  return pieza.matriz.every((fila, filaIndex) =>
+    fila.every((columna, columnaIndex) => {
+      if (columna === 0) return true;
+      const filaPos = pieza.fila + filaIndex;
+      const columnaPos = pieza.columna + columnaIndex;
+      return (
+        filaPos >= 0 &&
+        filaPos < arrayCasillas.length &&
+        columnaPos >= 0 &&
+        columnaPos < arrayCasillas[0].length &&
+        arrayCasillas[filaPos][columnaPos] === 0
+      );
+    })
+  );
+};
 
   const pintarPieza = (pieza) => {
     if (!pieza || !pieza.matriz) return;
@@ -76,94 +87,113 @@ const Juego = () => {
     setArrayCasillas(newArray);
   };
 
-
-  const girar = () => {
-    const nueva = new modeloPieza(
-      piezaActual.numero,
-      piezaActual.fila,
-      piezaActual.columna
-    );
-    nueva.girar();
-    actualizarPieza(nueva);
-  };
-
+const girar = () => {
+  const nueva = new modeloPieza(
+    piezaActual.numero,
+    piezaActual.fila,
+    piezaActual.columna,
+    (piezaActual.angulo + 90) % 360
+  );
+  nueva.girar(); 
+  console.log("Pieza girada:", nueva); 
+  actualizarPieza(nueva);
+};
   const moverIzq = () => {
+    const nuevaColumna = piezaActual.columna - 1; 
     const nueva = new modeloPieza(
       piezaActual.numero,
       piezaActual.fila,
-      piezaActual.columna - 1
+     nuevaColumna,
+      piezaActual.angulo
     );
     actualizarPieza(nueva);
   };
 
-  const moverDra = () => {
-    const nueva = new modeloPieza(
-      piezaActual.numero,
-      piezaActual.fila,
-      piezaActual.columna + 1
-    );
-    actualizarPieza(nueva);
-  };
-
-  const actualizarPieza = (nuevaPieza) => {
-    borrarPieza(piezaActual);
-    if (validarMovimiento(nuevaPieza)) {
-      setPiezaActual(nuevaPieza);
-      pintarPieza(nuevaPieza);
-    } else {
-      pintarPieza(piezaActual);
-    }
-  };
+const moverDra = () => {
+  
+  const nuevaColumna = piezaActual.columna + 1; 
 
   
+  const nueva = new modeloPieza(
+    piezaActual.numero,
+    piezaActual.fila,
+    nuevaColumna,
+    piezaActual.angulo 
+  );
+  actualizarPieza(nueva);
+};
 
- useEffect(() => {
-  const intervalId = setInterval(() => {
-    const nueva = new modeloPieza(
-      piezaActual.numero,
-      piezaActual.fila + 1,
-      piezaActual.columna
-    );
-    if (validarMovimiento(nueva)) {
-      actualizarPieza(nueva);
-    } else {
-      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
-    }
-  }, 500);
 
-  return () => clearInterval(intervalId);
-}, [piezaActual]);
+
+const actualizarPieza = (nuevaPieza) => {
+  borrarPieza(piezaActual);
+  if (validarMovimiento(nuevaPieza)) {
+    setPiezaActual(nuevaPieza); 
+    pintarPieza(nuevaPieza); 
+  } else {
+    pintarPieza(piezaActual); 
+  }
+};
+
+
+  useEffect(() => {
+    pintarPieza(piezaActual);
+    setTiempoRestante(2.5);
+
+    const intervalId = setInterval(() => {
+      const nueva = new modeloPieza(
+        piezaActual.numero,
+        piezaActual.fila + 1,
+        piezaActual.columna
+      );
+      if (validarMovimiento(nueva)) {
+        actualizarPieza(nueva);
+      } else {
+        setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
+      }
+    }, 2500);
+
+    const countdownId = setInterval(() => {
+      setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(countdownId);
+    };
+  }, [piezaActual]);
 
 
   const bajar = () => {
+    const filaNueva = piezaActual.fila + 1;
     const nueva = new modeloPieza(
       piezaActual.numero,
-      piezaActual.fila +1 ,
-      piezaActual.columna
+      filaNueva,
+      piezaActual.columna,
+      piezaActual.angulo
     );
     actualizarPieza(nueva);
   };
 
+ const controlTeclas = (e) => {
+   switch (e.key) {
+     case "ArrowUp":
+       girar();
+       break;
+     case "ArrowDown":
+       bajar();
+       break;
+     case "ArrowLeft":
+       moverIzq();
+       break;
+     case "ArrowRight":
+       moverDra();
+       break;
+     default:
+       break;
+   }
+ };
 
-  const controlTeclas = (e) => {
-    switch (e.key) {
-      case "ArrowUp":
-        girar();
-        break;
-      case "ArrowDown":
-        bajar();
-        console.log("Has pulsado la tecla arrowdown")
-        break;
-      case "ArrowLeft":
-        moverIzq();
-        break;
-      case "ArrowRight":
-        moverDra();
-        break;
-      default:
-        break;
-    }
-  };
 
   useEffect(() => {
     window.addEventListener("keydown", controlTeclas);
@@ -178,6 +208,8 @@ const Juego = () => {
       <Container>
         <h1 className="mt-5">Juego</h1>
         <Panel grid={arrayCasillas} />
+        <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
+
         <div>
           <Button className="mt-3" disabled>
             JUGAR (Inicia Automáticamente)
