@@ -19,6 +19,8 @@ const [piezaActual, setPiezaActual] = useState(() => {
 
   return piezaGenerada;
 });
+const [puntos, setPuntos] = useState(0);
+
 
   const [tiempoRestante, setTiempoRestante] = useState(2500); 
 
@@ -97,6 +99,7 @@ const girar = () => {
   nueva.girar(); 
   console.log("Pieza girada:", nueva); 
   actualizarPieza(nueva);
+  setPuntos(puntos + 20);
 };
   const moverIzq = () => {
     const nuevaColumna = piezaActual.columna - 1; 
@@ -107,6 +110,7 @@ const girar = () => {
       piezaActual.angulo
     );
     actualizarPieza(nueva);
+    setPuntos(puntos + 10);
   };
 
 const moverDra = () => {
@@ -121,6 +125,9 @@ const moverDra = () => {
     piezaActual.angulo 
   );
   actualizarPieza(nueva);
+  setPuntos(puntos + 10);
+
+  
 };
 
 
@@ -167,13 +174,24 @@ const actualizarPieza = (nuevaPieza) => {
   const bajar = () => {
     const filaNueva = piezaActual.fila + 1;
     const nueva = new modeloPieza(
-      piezaActual.numero,
-      filaNueva,
-      piezaActual.columna,
-      piezaActual.angulo
+        piezaActual.numero,
+        filaNueva,
+        piezaActual.columna,
+        piezaActual.angulo
     );
+
+    if (piezaActual.fila === 17 ) {
+        setPuntos(prevPuntos => prevPuntos + 50);
+        console.log("Pieza ha llegado a la fila 9. +50 puntos.");
+    } else {
+        setPuntos(prevPuntos => prevPuntos + 10);
+        console.log("Pieza ha bajado. +10 puntos.");
+    }
+
     actualizarPieza(nueva);
-  };
+};
+
+  
 
  const controlTeclas = (e) => {
    switch (e.key) {
@@ -209,7 +227,7 @@ const actualizarPieza = (nuevaPieza) => {
         <h1 className="mt-5">Juego</h1>
         <Panel grid={arrayCasillas} />
         <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
-
+        <p>Puntos actuales: {puntos}</p>
         <div>
           <Button className="mt-3" disabled>
             JUGAR (Inicia Automáticamente)
