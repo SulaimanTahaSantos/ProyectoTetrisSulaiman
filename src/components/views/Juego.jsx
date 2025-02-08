@@ -24,24 +24,29 @@ const [puntos, setPuntos] = useState(0);
 
   const [tiempoRestante, setTiempoRestante] = useState(2500); 
 
-const validarMovimiento = (pieza) => {
-  if (!pieza || !pieza.matriz) return false;
-
-  return pieza.matriz.every((fila, filaIndex) =>
-    fila.every((columna, columnaIndex) => {
-      if (columna === 0) return true;
-      const filaPos = pieza.fila + filaIndex;
-      const columnaPos = pieza.columna + columnaIndex;
-      return (
-        filaPos >= 0 &&
-        filaPos < arrayCasillas.length &&
-        columnaPos >= 0 &&
-        columnaPos < arrayCasillas[0].length &&
-        arrayCasillas[filaPos][columnaPos] === 0
-      );
-    })
-  );
-};
+  const validarMovimiento = (pieza) => {
+    if (!pieza || !pieza.matriz) return false;
+  
+    return pieza.matriz.every((fila, filaIndex) =>
+      fila.every((columna, columnaIndex) => {
+        if (columna === 0) return true;  
+        const filaPos = pieza.fila + filaIndex;
+        const columnaPos = pieza.columna + columnaIndex;
+  
+        const dentroDeLimites =
+          filaPos >= 0 &&
+          filaPos < arrayCasillas.length &&
+          columnaPos >= 0 &&
+          columnaPos < arrayCasillas[0].length;
+  
+        const estaLibre =
+          dentroDeLimites && (arrayCasillas[filaPos][columnaPos] === 0 || (arrayCasillas[filaPos][columnaPos] === columna));
+  
+        return estaLibre;
+      })
+    );
+  };
+  
 
   const pintarPieza = (pieza) => {
     if (!pieza || !pieza.matriz) return;
@@ -172,25 +177,34 @@ const actualizarPieza = (nuevaPieza) => {
 
 
   const bajar = () => {
-    const filaNueva = piezaActual.fila + 1;
-    const nueva = new modeloPieza(
-        piezaActual.numero,
-        filaNueva,
-        piezaActual.columna,
-        piezaActual.angulo
-    );
-
-    if (piezaActual.fila === 17 ) {
-        setPuntos(prevPuntos => prevPuntos + 50);
-        console.log("Pieza ha llegado a la fila 9. +50 puntos.");
-    } else {
-        setPuntos(prevPuntos => prevPuntos + 10);
-        console.log("Pieza ha bajado. +10 puntos.");
+    const filaNueva = piezaActual.fila + 1; 
+  
+    
+    if (filaNueva === 17) {
+      setPuntos((prevPuntos) => prevPuntos + 50); 
+      console.log("Pieza ha llegado a la fila 16. +50 puntos.");
     }
-
-    actualizarPieza(nueva);
-};
-
+  
+    
+    const nuevaPieza = new modeloPieza(
+      piezaActual.numero,
+      filaNueva,
+      piezaActual.columna,
+      piezaActual.angulo
+    );
+  
+    if (!validarMovimiento(nuevaPieza)) {
+      setPuntos((prevPuntos) => prevPuntos + 50); 
+      console.log("Pieza ha colisionado. +50 puntos.");
+    } else {
+      setPuntos((prevPuntos) => prevPuntos + 10); 
+      console.log("Pieza ha bajado. +10 puntos.");
+    }
+  
+    // Al final, actualiza la pieza
+    actualizarPieza(nuevaPieza);
+  };
+  
   
 
  const controlTeclas = (e) => {
