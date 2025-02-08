@@ -5,6 +5,7 @@ import Panel from "../Panel";
 import modelos from "../../lib/modelos";
 import nuevaPieza from "../../lib/nuevaPieza";
 import modeloPieza from "../../lib/class/modeloPieza";
+import GameOver from "../GameOver";
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
@@ -20,9 +21,31 @@ const [piezaActual, setPiezaActual] = useState(() => {
   return piezaGenerada;
 });
 const [puntos, setPuntos] = useState(0);
+const [gameOver, setGameOver] = useState(false);
 
 
-  const [tiempoRestante, setTiempoRestante] = useState(2500); 
+
+
+
+  const [tiempoRestante, setTiempoRestante] = useState(2500);
+  
+  const verificarGameOver = () => {
+    if (arrayCasillas[0].every(col => col !== 0)) {
+      setGameOver(true);
+    }
+  }
+
+  useEffect(() => {
+    if (gameOver) {
+      setTimeout(() => {
+        window.location.reload();  
+      }, 2000); 
+    }
+  }, [gameOver]);
+
+  useEffect(() => {
+    verificarGameOver();
+  }, [arrayCasillas]);  
 
   const validarMovimiento = (pieza) => {
     if (!pieza || !pieza.matriz) return false;
@@ -237,6 +260,8 @@ const actualizarPieza = (nuevaPieza) => {
   return (
     <>
       <AppMenu />
+      <GameOver show={gameOver} message="¡Has perdido la partida!" />
+
       <Container>
         <h1 className="mt-5">Juego</h1>
         <Panel grid={arrayCasillas} />
