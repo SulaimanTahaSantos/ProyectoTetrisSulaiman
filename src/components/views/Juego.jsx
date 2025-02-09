@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";  // Para redirigir
+import { usePartidas } from "../../context/PartidasContext";  // Usamos el contexto
 import AppMenu from "../AppMenu";
 import Panel from "../Panel";
 import modelos from "../../lib/modelos";
@@ -22,7 +24,8 @@ const [piezaActual, setPiezaActual] = useState(() => {
 });
 const [puntos, setPuntos] = useState(0);
 const [gameOver, setGameOver] = useState(false);
-
+const { partidas, registrarPartida } = usePartidas();  
+const navigate = useNavigate();  
 
 
 
@@ -34,14 +37,35 @@ const [gameOver, setGameOver] = useState(false);
       setGameOver(true);
     }
   }
-
   useEffect(() => {
     if (gameOver) {
       setTimeout(() => {
-        window.location.reload();  
-      }, 2000); 
+        const existingGame = partidas.some(partida =>
+          partida.name === "Jugador" &&
+          partida.point === puntos &&
+          partida.releaseDate === new Date().toLocaleDateString()
+        );
+        
+        if (!existingGame) {
+          registrarPartida({
+            id: Date.now(),  
+            name: "Jugador",  
+            title: "Juego Terminado",  
+            point: puntos,  
+            releaseDate: new Date().toLocaleDateString(),  
+          });
+        }
+        
+        
+        navigate("/Partidas");
+      }, 2000);  
     }
-  }, [gameOver]);
+  }, [gameOver, puntos, registrarPartida, navigate, partidas]);  // Usa 'partidas' desde el contexto aquí
+  
+  
+  
+  
+
 
   useEffect(() => {
     verificarGameOver();
@@ -257,6 +281,7 @@ const actualizarPieza = (nuevaPieza) => {
     };
   }, [piezaActual, arrayCasillas]);
 
+
   return (
     <>
       <AppMenu />
@@ -270,6 +295,9 @@ const actualizarPieza = (nuevaPieza) => {
         <div>
           <Button className="mt-3" disabled>
             JUGAR (Inicia Automáticamente)
+          </Button>
+          <Button className="mt-3"  onClick={() => setGameOver(true)} >
+            perder
           </Button>
         </div>
       </Container>
