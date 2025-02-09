@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";  // Para redirigir
-import { usePartidas } from "../../context/PartidasContext";  // Usamos el contexto
+import { useNavigate } from "react-router-dom";  
+import { usePartidas } from "../../context/PartidasContext";  
 import AppMenu from "../AppMenu";
 import Panel from "../Panel";
 import modelos from "../../lib/modelos";
@@ -31,6 +31,8 @@ const navigate = useNavigate();
 
 
   const [tiempoRestante, setTiempoRestante] = useState(2500);
+
+  
   
   const verificarGameOver = () => {
     if (arrayCasillas[0].every(col => col !== 0)) {
@@ -56,11 +58,14 @@ const navigate = useNavigate();
           });
         }
         
-        
-        navigate("/Partidas");
+        if (location.pathname === "/Partidas") {
+          window.location.reload();  
+        }
+        navigate("/Partidas");  
       }, 2000);  
     }
-  }, [gameOver, puntos, registrarPartida, navigate, partidas]);  // Usa 'partidas' desde el contexto aquí
+  }, [gameOver, puntos, registrarPartida, navigate, partidas]);
+  
   
   
   

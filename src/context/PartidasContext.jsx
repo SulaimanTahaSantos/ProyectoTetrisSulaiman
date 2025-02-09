@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const PartidasContext = createContext();
 
@@ -9,8 +9,23 @@ export const usePartidas = () => {
 export const PartidasProvider = ({ children }) => {
   const [partidas, setPartidas] = useState([]);
 
-  const registrarPartida = (nuevaPartida) => {
-    setPartidas((prevPartidas) => [...prevPartidas, nuevaPartida]);
+  useEffect(() => {
+    cargarPartidas();
+  }, []);
+
+  const registrarPartida = (partida) => {
+    const partidasGuardadas = JSON.parse(localStorage.getItem("partidas")) || [];
+    partidasGuardadas.push(partida);
+    localStorage.setItem("partidas", JSON.stringify(partidasGuardadas));
+
+    setPartidas(partidasGuardadas);
+  };
+
+  const cargarPartidas = () => {
+    const partidasGuardadas = JSON.parse(localStorage.getItem("partidas"));
+    if (partidasGuardadas) {
+      setPartidas(partidasGuardadas);  
+    }
   };
 
   return (

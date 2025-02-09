@@ -7,9 +7,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { usePartidas } from "../context/PartidasContext";
 
 const TableGames = () => {
-  const { partidas } = usePartidas();
-  const [partidas1, setPartidas] = useState([]);
-  // Array de juegos
+  const { partidas, registrarPartida } = usePartidas();
+ // Array de juegos
 
 
   // Estado para ordenar columnas
@@ -59,7 +58,6 @@ const TableGames = () => {
         setShowModal(false);
     }
 
-    // Ahora haremos que se actualice la array a traves del formulario
     const handleAddGame = (e) => {
       e.preventDefault();
       setShowModal(false);
@@ -71,14 +69,10 @@ const TableGames = () => {
         point: parseInt(e.target.point.value),
         releaseDate: e.target.releaseDate.value,
       };
-      setPartidas((prevPartidas) => {
-        // Aquí puedes asegurarte de que no se agregue una partida duplicada
-        if (!prevPartidas.some(game => game.id === newGame.id)) {
-          return [...prevPartidas, newGame];
-        }
-        return prevPartidas;
-      });
+    
+      registrarPartida(newGame);
     };
+    
     
 
    return (
