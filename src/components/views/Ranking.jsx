@@ -1,33 +1,43 @@
 import React from "react";
 import { Container, Table, Badge } from "react-bootstrap";
 import AppMenu from "../AppMenu";
-
-// Datos de ejemplo para el ranking
-const rankingData = [
-  { position: 1, name: "Juan Pérez", points: 1200, games: 45 },
-  { position: 2, name: "María García", points: 1150, games: 42 },
-  { position: 3, name: "Carlos Rodríguez", points: 1100, games: 40 },
-  { position: 4, name: "Ana Martínez", points: 1050, games: 38 },
-  { position: 5, name: "Luis Sánchez", points: 1000, games: 36 },
-];
+import { usePartidas } from "../../context/PartidasContext";
 
 const Ranking = () => {
+  const { partidas } = usePartidas();
+
+  const rankingData = partidas
+  .sort((a, b) => b.point - a.point) 
+  .map((partida, index) => ({
+    position: index + 1,
+    id: partida.id,
+    name: partida.name,
+    title: partida.title,
+    point: partida.point,
+    releaseDate: partida.releaseDate,
+  }));
+
+const topRanking = rankingData.slice(0, 3);
+
+
   return (
     <>
       <AppMenu />
       <Container>
-        <h1 className="mt-5 mb-4">Ranking de Jugadores</h1>
+        <h1 className="mt-5 mb-4">Top 3 Ranking</h1>
         <Table striped bordered hover responsive>
           <thead className="bg-primary text-white">
             <tr>
               <th>Posición</th>
-              <th>Jugador</th>
+              <th>ID</th>
+              <th>Nombre</th>
               <th>Puntos</th>
-              <th>Partidas Jugadas</th>
+              <th>Titulo</th>
+              <th>Fecha de fin de la partida</th>
             </tr>
           </thead>
           <tbody>
-            {rankingData.map((player) => (
+            {topRanking.map((player) => (
               <tr key={player.position}>
                 <td>
                   <Badge 
@@ -37,9 +47,11 @@ const Ranking = () => {
                     {player.position}
                   </Badge>
                 </td>
+                <td>{player.id}</td>
                 <td>{player.name}</td>
-                <td>{player.points}</td>
-                <td>{player.games}</td>
+                <td>{player.point}</td>
+                <td>{player.title}</td>
+                <td>{player.releaseDate}</td>
               </tr>
             ))}
           </tbody>
@@ -47,7 +59,6 @@ const Ranking = () => {
       </Container>
     </>
   );
-}
+};
 
 export default Ranking;
-

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Container, Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";  
+import { usePartidas } from "../../context/PartidasContext";  
 import AppMenu from "../AppMenu";
 import Panel from "../Panel";
 import modelos from "../../lib/modelos";
 import nuevaPieza from "../../lib/nuevaPieza";
 import modeloPieza from "../../lib/class/modeloPieza";
+import GameOver from "../GameOver";
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
@@ -19,27 +22,76 @@ const [piezaActual, setPiezaActual] = useState(() => {
 
   return piezaGenerada;
 });
+const [puntos, setPuntos] = useState(0);
+const [gameOver, setGameOver] = useState(false);
+const { partidas, registrarPartida } = usePartidas();  
+const navigate = useNavigate();  
+const [tiempoRestante, setTiempoRestante] = useState(2500);  
+  const verificarGameOver = () => {
+    if (arrayCasillas[0].every(col => col !== 0)) {
+      setGameOver(true);
+    }
+  }
+  useEffect(() => {
+    if (gameOver) {
+      setTimeout(() => {
+        const existingGame = partidas.some(partida =>
+          partida.name === "Jugador" &&
+          partida.point === puntos &&
+          partida.releaseDate === new Date().toLocaleDateString()
+        );
+        
+        if (!existingGame) {
+          registrarPartida({
+            id: Date.now(),  
+            name: "Jugador",  
+            title: "Juego Terminado",  
+            point: puntos,  
+            releaseDate: new Date().toLocaleDateString(),  
+          });
+        }
+        
+        if (location.pathname === "/Partidas") {
+          window.location.reload();  
+        }
+        navigate("/Partidas");  
+      }, 2000);  
+    }
+  }, [gameOver, puntos, registrarPartida, navigate, partidas]);
+  
+  
+  
+  
+  
 
-  const [tiempoRestante, setTiempoRestante] = useState(2500); 
 
-const validarMovimiento = (pieza) => {
-  if (!pieza || !pieza.matriz) return false;
+  useEffect(() => {
+    verificarGameOver();
+  }, [arrayCasillas]);  
 
-  return pieza.matriz.every((fila, filaIndex) =>
-    fila.every((columna, columnaIndex) => {
-      if (columna === 0) return true;
-      const filaPos = pieza.fila + filaIndex;
-      const columnaPos = pieza.columna + columnaIndex;
-      return (
-        filaPos >= 0 &&
-        filaPos < arrayCasillas.length &&
-        columnaPos >= 0 &&
-        columnaPos < arrayCasillas[0].length &&
-        arrayCasillas[filaPos][columnaPos] === 0
-      );
-    })
-  );
-};
+  const validarMovimiento = (pieza) => {
+    if (!pieza || !pieza.matriz) return false;
+  
+    return pieza.matriz.every((fila, filaIndex) =>
+      fila.every((columna, columnaIndex) => {
+        if (columna === 0) return true;  
+        const filaPos = pieza.fila + filaIndex;
+        const columnaPos = pieza.columna + columnaIndex;
+  
+        const dentroDeLimites =
+          filaPos >= 0 &&
+          filaPos < arrayCasillas.length &&
+          columnaPos >= 0 &&
+          columnaPos < arrayCasillas[0].length;
+  
+        const estaLibre =
+          dentroDeLimites && (arrayCasillas[filaPos][columnaPos] === 0 || (arrayCasillas[filaPos][columnaPos] === columna));
+  
+        return estaLibre;
+      })
+    );
+  };
+  
 
   const pintarPieza = (pieza) => {
     if (!pieza || !pieza.matriz) return;
@@ -97,6 +149,7 @@ const girar = () => {
   nueva.girar(); 
   console.log("Pieza girada:", nueva); 
   actualizarPieza(nueva);
+  setPuntos(puntos + 20);
 };
   const moverIzq = () => {
     const nuevaColumna = piezaActual.columna - 1; 
@@ -107,6 +160,7 @@ const girar = () => {
       piezaActual.angulo
     );
     actualizarPieza(nueva);
+    setPuntos(puntos + 10);
   };
 
 const moverDra = () => {
@@ -121,6 +175,9 @@ const moverDra = () => {
     piezaActual.angulo 
   );
   actualizarPieza(nueva);
+  setPuntos(puntos + 10);
+
+  
 };
 
 
@@ -165,15 +222,34 @@ const actualizarPieza = (nuevaPieza) => {
 
 
   const bajar = () => {
-    const filaNueva = piezaActual.fila + 1;
-    const nueva = new modeloPieza(
+    const filaNueva = piezaActual.fila + 1; 
+  
+    
+    if (filaNueva === 17) {
+      setPuntos((prevPuntos) => prevPuntos + 50); 
+      console.log("Pieza ha llegado a la fila 16. +50 puntos.");
+    }
+  
+    
+    const nuevaPieza = new modeloPieza(
       piezaActual.numero,
       filaNueva,
       piezaActual.columna,
       piezaActual.angulo
     );
-    actualizarPieza(nueva);
+  
+    if (!validarMovimiento(nuevaPieza)) {
+      setPuntos((prevPuntos) => prevPuntos + 50); 
+      console.log("Pieza ha colisionado. +50 puntos.");
+    } else {
+      setPuntos((prevPuntos) => prevPuntos + 10); 
+      console.log("Pieza ha bajado. +10 puntos.");
+    }
+  
+    actualizarPieza(nuevaPieza);
   };
+  
+  
 
  const controlTeclas = (e) => {
    switch (e.key) {
@@ -202,17 +278,23 @@ const actualizarPieza = (nuevaPieza) => {
     };
   }, [piezaActual, arrayCasillas]);
 
+
   return (
     <>
       <AppMenu />
+      <GameOver show={gameOver} message="¡Has perdido la partida!" />
+
       <Container>
         <h1 className="mt-5">Juego</h1>
         <Panel grid={arrayCasillas} />
         <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
-
+        <p>Puntos actuales: {puntos}</p>
         <div>
           <Button className="mt-3" disabled>
             JUGAR (Inicia Automáticamente)
+          </Button>
+          <Button className="mt-3"  onClick={() => setGameOver(true)} >
+            perder
           </Button>
         </div>
       </Container>

@@ -4,14 +4,12 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { usePartidas } from "../context/PartidasContext";
 
 const TableGames = () => {
-  // Array de juegos
-  const [partidas, setPartidas] = useState([
-    { id: 1, name: "zulaiman", title: "Game 1", point: 1200, releaseDate: "2021-01-01" },
-    { id: 2, name: "Sulaiman", title: "Game 2", point: 1400, releaseDate: "2020-12-31" },
-    { id: 3, name: "aulaiman", title: "Game 3", point: 1600, releaseDate: "2020-11-30" },
-  ]);
+  const { partidas, registrarPartida } = usePartidas();
+ // Array de juegos
+
 
   // Estado para ordenar columnas
 
@@ -60,21 +58,22 @@ const TableGames = () => {
         setShowModal(false);
     }
 
-    // Ahora haremos que se actualice la array a traves del formulario
-
-   const handleAddGame = (e) => {
-    e.preventDefault();
-    setShowModal(false);
-
-    const newGame = {
-      id: parseInt(e.target.id.value), 
-      name: e.target.name.value,
-      title: e.target.title.value,
-      point: parseInt(e.target.point.value), 
-      releaseDate: e.target.releaseDate.value,
+    const handleAddGame = (e) => {
+      e.preventDefault();
+      setShowModal(false);
+    
+      const newGame = {
+        id: parseInt(e.target.id.value),
+        name: e.target.name.value,
+        title: e.target.title.value,
+        point: parseInt(e.target.point.value),
+        releaseDate: e.target.releaseDate.value,
+      };
+    
+      registrarPartida(newGame);
     };
-    setPartidas((prevPartidas) => [...prevPartidas, newGame]);
-  };
+    
+    
 
    return (
     <div >
