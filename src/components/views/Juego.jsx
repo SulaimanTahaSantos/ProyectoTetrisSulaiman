@@ -26,14 +26,7 @@ const [puntos, setPuntos] = useState(0);
 const [gameOver, setGameOver] = useState(false);
 const { partidas, registrarPartida } = usePartidas();  
 const navigate = useNavigate();  
-
-
-
-
-  const [tiempoRestante, setTiempoRestante] = useState(2500);
-
-  
-  
+const [tiempoRestante, setTiempoRestante] = useState(2500);  
   const verificarGameOver = () => {
     if (arrayCasillas[0].every(col => col !== 0)) {
       setGameOver(true);
@@ -253,7 +246,6 @@ const actualizarPieza = (nuevaPieza) => {
       console.log("Pieza ha bajado. +10 puntos.");
     }
   
-    // Al final, actualiza la pieza
     actualizarPieza(nuevaPieza);
   };
   
