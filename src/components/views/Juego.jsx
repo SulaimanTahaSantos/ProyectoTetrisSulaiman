@@ -26,7 +26,14 @@ const [puntos, setPuntos] = useState(0);
 const [gameOver, setGameOver] = useState(false);
 const { partidas, registrarPartida } = usePartidas();  
 const navigate = useNavigate();  
-const [tiempoRestante, setTiempoRestante] = useState(2500);  
+
+
+
+
+  const [tiempoRestante, setTiempoRestante] = useState(2500);
+
+  
+  
   const verificarGameOver = () => {
     if (arrayCasillas[0].every(col => col !== 0)) {
       setGameOver(true);
@@ -69,7 +76,7 @@ const [tiempoRestante, setTiempoRestante] = useState(2500);
     verificarGameOver();
   }, [arrayCasillas]);  
 
-  const validarMovimiento = (pieza) => {
+  const hayColision = (pieza) => {
     if (!pieza || !pieza.matriz) return false;
   
     return pieza.matriz.every((fila, filaIndex) =>
@@ -184,7 +191,7 @@ const moverDra = () => {
 
 const actualizarPieza = (nuevaPieza) => {
   borrarPieza(piezaActual);
-  if (validarMovimiento(nuevaPieza)) {
+  if (hayColision(nuevaPieza)) {
     setPiezaActual(nuevaPieza); 
     pintarPieza(nuevaPieza); 
   } else {
@@ -203,7 +210,7 @@ const actualizarPieza = (nuevaPieza) => {
         piezaActual.fila + 1,
         piezaActual.columna
       );
-      if (validarMovimiento(nueva)) {
+      if (hayColision(nueva)) {
         actualizarPieza(nueva);
       } else {
         setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
@@ -225,7 +232,7 @@ const actualizarPieza = (nuevaPieza) => {
     const filaNueva = piezaActual.fila + 1; 
   
     
-    if (filaNueva === 17) {
+    if (filaNueva === 18) {
       setPuntos((prevPuntos) => prevPuntos + 50); 
       console.log("Pieza ha llegado a la fila 16. +50 puntos.");
     }
@@ -238,7 +245,7 @@ const actualizarPieza = (nuevaPieza) => {
       piezaActual.angulo
     );
   
-    if (!validarMovimiento(nuevaPieza)) {
+    if (!hayColision(nuevaPieza)) {
       setPuntos((prevPuntos) => prevPuntos + 50); 
       console.log("Pieza ha colisionado. +50 puntos.");
     } else {
