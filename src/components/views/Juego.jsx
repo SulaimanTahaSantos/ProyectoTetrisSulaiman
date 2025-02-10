@@ -155,8 +155,12 @@ const girar = () => {
   );
   nueva.girar(); 
   console.log("Pieza girada:", nueva); 
-  actualizarPieza(nueva);
-  setPuntos(puntos + 20);
+  if (hayColision(nueva)) {
+    actualizarPieza(nueva);
+    setPuntos((prevPuntos) => prevPuntos + 20); 
+    console.log("Pieza se ha girado. +20 puntos.");
+
+  }
 };
   const moverIzq = () => {
     const nuevaColumna = piezaActual.columna - 1; 
@@ -166,8 +170,14 @@ const girar = () => {
      nuevaColumna,
       piezaActual.angulo
     );
-    actualizarPieza(nueva);
-    setPuntos(puntos + 10);
+
+    if (hayColision(nueva)) {
+      actualizarPieza(nueva);
+      setPuntos((prevPuntos) => prevPuntos + 10); 
+      console.log("Pieza se ha movido a la izquierda. +10 puntos.");
+
+    }
+   
   };
 
 const moverDra = () => {
@@ -181,8 +191,13 @@ const moverDra = () => {
     nuevaColumna,
     piezaActual.angulo 
   );
-  actualizarPieza(nueva);
-  setPuntos(puntos + 10);
+
+  if (hayColision(nueva)) {
+    actualizarPieza(nueva);
+    setPuntos((prevPuntos) => prevPuntos + 10); 
+    console.log("Pieza se ha movido a la derecha. +10 puntos.");
+
+  }
 
   
 };
@@ -231,30 +246,27 @@ const actualizarPieza = (nuevaPieza) => {
   const bajar = () => {
     const filaNueva = piezaActual.fila + 1; 
   
-    
-    if (filaNueva === 18) {
-      setPuntos((prevPuntos) => prevPuntos + 50); 
-      console.log("Pieza ha llegado a la fila 16. +50 puntos.");
-    }
-  
-    
-    const nuevaPieza = new modeloPieza(
+    const nuevaPiezaGenerada = new modeloPieza(
       piezaActual.numero,
       filaNueva,
       piezaActual.columna,
       piezaActual.angulo
     );
   
-    if (!hayColision(nuevaPieza)) {
+    if (filaNueva === 17 || !hayColision(nuevaPiezaGenerada)) {
       setPuntos((prevPuntos) => prevPuntos + 50); 
-      console.log("Pieza ha colisionado. +50 puntos.");
+      console.log("Pieza ha llegado a la última fila. +50 puntos.", filaNueva);
+      console.log("Pieza ha colisionado. +50 puntos.", !hayColision(nuevaPiezaGenerada));
+  
+      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1)); // Esta línea genera una nueva pieza aleatoria
+  
     } else {
       setPuntos((prevPuntos) => prevPuntos + 10); 
       console.log("Pieza ha bajado. +10 puntos.");
     }
-  
-    actualizarPieza(nuevaPieza);
+    actualizarPieza(nuevaPiezaGenerada); 
   };
+  
   
   
 
