@@ -33,6 +33,32 @@ const navigate = useNavigate();
   const [tiempoRestante, setTiempoRestante] = useState(2500);
 
   
+  const borrarFilaLlena = () => {
+    const newArray = [...arrayCasillas];
+    
+    for (let fila = arrayCasillas.length - 1; fila >= 0; fila--) {
+      if (newArray[fila].every(celda => celda !== 0)) {
+        newArray[fila] = newArray[fila].map((celda, columnaIndex) => {
+          if (columnaIndex !== 0 && columnaIndex !== newArray[fila].length - 1) {
+            return (celda >= 2 && celda <= 8 ? 0 : celda);
+          }
+          return celda; 
+        });
+        
+        for (let i = fila - 1; i >= 0; i--) {
+          newArray[i + 1] = [...newArray[i]]; 
+        }
+        
+        newArray[0] = newArray[0].map((celda, columnaIndex) => {
+          return (columnaIndex !== 0 && columnaIndex !== newArray[0].length - 1 ? 0 : celda);
+        });
+      }
+    }
+    
+    setArrayCasillas(newArray); 
+  };
+  
+  
   
   const verificarGameOver = () => {
     if (arrayCasillas[0].every(col => col !== 0)) {
@@ -212,6 +238,8 @@ const actualizarPieza = (nuevaPieza) => {
   } else {
     pintarPieza(piezaActual); 
   }
+  borrarFilaLlena();
+
 };
 
 
@@ -258,7 +286,7 @@ const actualizarPieza = (nuevaPieza) => {
       console.log("Pieza ha llegado a la última fila. +50 puntos.", filaNueva);
       console.log("Pieza ha colisionado. +50 puntos.", !hayColision(nuevaPiezaGenerada));
   
-      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1)); // Esta línea genera una nueva pieza aleatoria
+      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1)); 
   
     } else {
       setPuntos((prevPuntos) => prevPuntos + 10); 
