@@ -8,6 +8,8 @@ import modelos from "../../lib/modelos";
 import nuevaPieza from "../../lib/nuevaPieza";
 import modeloPieza from "../../lib/class/modeloPieza";
 import GameOver from "../GameOver";
+import colorPieza from '../../lib/colorPieza';
+
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
@@ -26,7 +28,57 @@ const [puntos, setPuntos] = useState(0);
 const [gameOver, setGameOver] = useState(false);
 const { partidas, registrarPartida } = usePartidas();  
 const navigate = useNavigate();  
-const [tiempoRestante, setTiempoRestante] = useState(2500);  
+const [tiempoRestante, setTiempoRestante] = useState(2500
+
+);
+const [filasEliminadas, setFilasEliminadas] = useState(0);
+const [piezaSiguiente, setPiezaSiguiente] = useState(() => {
+  const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
+  return nuevaPieza(0, columnaAleatoria); 
+});
+const [velocidadCaida, setVelocidadCaida] = useState(2500); 
+useEffect(() => {
+  if (filasEliminadas % 5 === 0 && filasEliminadas > 0) {
+    setVelocidadCaida(prevVel => Math.max(prevVel - 200, 500)); 
+  }
+}, [filasEliminadas]);
+
+
+
+  
+ 
+const borrarFilaLlena = () => {
+  const newArray = [...arrayCasillas];
+  let filasEliminadasTemp = 0; 
+
+  for (let fila = arrayCasillas.length - 1; fila >= 0; fila--) {
+    if (newArray[fila].every(celda => celda !== 0)) {
+      filasEliminadasTemp++; 
+
+      newArray[fila] = newArray[fila].map((celda, columnaIndex) => {
+        if (columnaIndex !== 0 && columnaIndex !== newArray[fila].length - 1) {
+          return (celda >= 2 && celda <= 8 ? 0 : celda);
+        }
+        return celda;
+      });
+
+      for (let i = fila - 1; i >= 0; i--) {
+        newArray[i + 1] = [...newArray[i]];
+      }
+
+      newArray[0] = newArray[0].map((celda, columnaIndex) => {
+        return (columnaIndex !== 0 && columnaIndex !== newArray[0].length - 1 ? 0 : celda);
+      });
+    }
+  }
+  console.log("Filas eliminadas:", filasEliminadasTemp);
+
+  setFilasEliminadas(prev => prev + filasEliminadasTemp); 
+  setArrayCasillas(newArray);
+};
+ 
+  
+  
   const verificarGameOver = () => {
     if (arrayCasillas[0].every(col => col !== 0)) {
       setGameOver(true);
@@ -69,7 +121,7 @@ const [tiempoRestante, setTiempoRestante] = useState(2500);
     verificarGameOver();
   }, [arrayCasillas]);  
 
-  const validarMovimiento = (pieza) => {
+  const hayColision = (pieza) => {
     if (!pieza || !pieza.matriz) return false;
   
     return pieza.matriz.every((fila, filaIndex) =>
@@ -86,8 +138,12 @@ const [tiempoRestante, setTiempoRestante] = useState(2500);
   
         const estaLibre =
           dentroDeLimites && (arrayCasillas[filaPos][columnaPos] === 0 || (arrayCasillas[filaPos][columnaPos] === columna));
+          console.log("Colisión detectada:", !estaLibre);
+          console.log("Dentro de límites:", dentroDeLimites);
+         
   
         return estaLibre;
+       
       })
     );
   };
@@ -148,8 +204,12 @@ const girar = () => {
   );
   nueva.girar(); 
   console.log("Pieza girada:", nueva); 
-  actualizarPieza(nueva);
-  setPuntos(puntos + 20);
+  if (hayColision(nueva)) {
+    actualizarPieza(nueva);
+    setPuntos((prevPuntos) => prevPuntos + 20); 
+    console.log("Pieza se ha girado. +20 puntos.");
+
+  }
 };
   const moverIzq = () => {
     const nuevaColumna = piezaActual.columna - 1; 
@@ -159,8 +219,14 @@ const girar = () => {
      nuevaColumna,
       piezaActual.angulo
     );
-    actualizarPieza(nueva);
-    setPuntos(puntos + 10);
+
+    if (hayColision(nueva)) {
+      actualizarPieza(nueva);
+      setPuntos((prevPuntos) => prevPuntos + 10); 
+      console.log("Pieza se ha movido a la izquierda. +10 puntos.");
+
+    }
+   
   };
 
 const moverDra = () => {
@@ -174,8 +240,13 @@ const moverDra = () => {
     nuevaColumna,
     piezaActual.angulo 
   );
-  actualizarPieza(nueva);
-  setPuntos(puntos + 10);
+
+  if (hayColision(nueva)) {
+    actualizarPieza(nueva);
+    setPuntos((prevPuntos) => prevPuntos + 10); 
+    console.log("Pieza se ha movido a la derecha. +10 puntos.");
+
+  }
 
   
 };
@@ -184,70 +255,72 @@ const moverDra = () => {
 
 const actualizarPieza = (nuevaPieza) => {
   borrarPieza(piezaActual);
-  if (validarMovimiento(nuevaPieza)) {
-    setPiezaActual(nuevaPieza); 
-    pintarPieza(nuevaPieza); 
+
+  if (hayColision(nuevaPieza)) {
+    setPiezaActual(nuevaPieza);
   } else {
-    pintarPieza(piezaActual); 
+    pintarPieza(piezaActual);
+    borrarFilaLlena(); 
   }
 };
 
 
-  useEffect(() => {
-    pintarPieza(piezaActual);
-    setTiempoRestante(2.5);
 
-    const intervalId = setInterval(() => {
-      const nueva = new modeloPieza(
-        piezaActual.numero,
-        piezaActual.fila + 1,
-        piezaActual.columna
-      );
-      if (validarMovimiento(nueva)) {
-        actualizarPieza(nueva);
-      } else {
-        setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
-      }
-    }, 2500);
+useEffect(() => {
+  pintarPieza(piezaActual);
+  setTiempoRestante(2.5);
 
-    const countdownId = setInterval(() => {
-      setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
-    return () => {
-      clearInterval(intervalId);
-      clearInterval(countdownId);
-    };
-  }, [piezaActual]);
-
-
-  const bajar = () => {
-    const filaNueva = piezaActual.fila + 1; 
-  
-    
-    if (filaNueva === 17) {
-      setPuntos((prevPuntos) => prevPuntos + 50); 
-      console.log("Pieza ha llegado a la fila 16. +50 puntos.");
-    }
-  
-    
-    const nuevaPieza = new modeloPieza(
+  const intervalId = setInterval(() => {
+    const nueva = new modeloPieza(
       piezaActual.numero,
-      filaNueva,
-      piezaActual.columna,
-      piezaActual.angulo
+      piezaActual.fila + 1,
+      piezaActual.columna
     );
-  
-    if (!validarMovimiento(nuevaPieza)) {
-      setPuntos((prevPuntos) => prevPuntos + 50); 
-      console.log("Pieza ha colisionado. +50 puntos.");
+    if (hayColision(nueva)) {
+      actualizarPieza(nueva);
+      console.log("colision detectada");
     } else {
-      setPuntos((prevPuntos) => prevPuntos + 10); 
-      console.log("Pieza ha bajado. +10 puntos.");
+      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
     }
-  
-    actualizarPieza(nuevaPieza);
+  }, velocidadCaida);
+
+  const countdownId = setInterval(() => {
+    setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
+  }, 2500);
+
+  return () => {
+    clearInterval(intervalId);
+    clearInterval(countdownId);
   };
+}, [piezaActual, velocidadCaida]);
+
+
+
+
+const bajar = () => {
+  const filaNueva = piezaActual.fila + 1;
+
+  const nuevaPiezaGenerada = new modeloPieza(
+    piezaActual.numero,
+    filaNueva,
+    piezaActual.columna,
+    piezaActual.angulo
+  );
+
+  if (filaNueva === 21 || !hayColision(nuevaPiezaGenerada)) {
+    setPuntos((prevPuntos) => prevPuntos + 50);
+
+    setPiezaActual(piezaSiguiente);
+    
+    setPiezaSiguiente(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
+  } else {
+    setPuntos((prevPuntos) => prevPuntos + 10);
+  }
+
+  actualizarPieza(nuevaPiezaGenerada);
+};
+
+  
   
   
 
@@ -278,6 +351,20 @@ const actualizarPieza = (nuevaPieza) => {
     };
   }, [piezaActual, arrayCasillas]);
 
+  const cambiarPieza = () => {
+    borrarPieza(piezaActual);
+    
+    setPiezaActual({ 
+      ...piezaSiguiente, 
+      fila: piezaActual.fila,  
+      columna: piezaActual.columna
+    });
+    
+    setPiezaSiguiente(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
+  };
+  
+  
+
 
   return (
     <>
@@ -286,9 +373,28 @@ const actualizarPieza = (nuevaPieza) => {
 
       <Container>
         <h1 className="mt-5">Juego</h1>
+        <div onClick={cambiarPieza} style={{ border: "1px solid black", padding: "10px", margin: "10px", display: "inline-block" }}>
+  <h4>Siguiente Pieza</h4>
+  {piezaSiguiente && piezaSiguiente.matriz.map((fila, filaIndex) => (
+    <div key={filaIndex} style={{ display: "flex", justifyContent: "center" }}>
+      {fila.map((celda, celdaIndex) => (
+        <div key={celdaIndex} style={{
+          width: "20px",
+          height: "20px",
+          border: "1px solid black"
+        }}
+        className={`border ${celda === 0 ? 'bg-white' : colorPieza(celda)}`} 
+        ></div>
+      ))}
+    </div>
+  ))}
+</div>
+
         <Panel grid={arrayCasillas} />
         <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
+        <p>velocidad de caida : {velocidadCaida}</p>
         <p>Puntos actuales: {puntos}</p>
+        <p>Filas eliminadas: {filasEliminadas}</p>
         <div>
           <Button className="mt-3" disabled>
             JUGAR (Inicia Automáticamente)
