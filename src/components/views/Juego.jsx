@@ -36,6 +36,13 @@ const [piezaSiguiente, setPiezaSiguiente] = useState(() => {
   const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
   return nuevaPieza(0, columnaAleatoria); 
 });
+const [velocidadCaida, setVelocidadCaida] = useState(2500); 
+useEffect(() => {
+  if (filasEliminadas % 5 === 0 && filasEliminadas > 0) {
+    setVelocidadCaida(prevVel => Math.max(prevVel - 200, 500)); 
+  }
+}, [filasEliminadas]);
+
 
 
   
@@ -275,7 +282,7 @@ useEffect(() => {
     } else {
       setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
     }
-  }, 2500);
+  }, velocidadCaida);
 
   const countdownId = setInterval(() => {
     setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
@@ -285,7 +292,7 @@ useEffect(() => {
     clearInterval(intervalId);
     clearInterval(countdownId);
   };
-}, [piezaActual]);
+}, [piezaActual, velocidadCaida]);
 
 
 
@@ -385,6 +392,7 @@ const bajar = () => {
 
         <Panel grid={arrayCasillas} />
         <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
+        <p>velocidad de caida : {velocidadCaida}</p>
         <p>Puntos actuales: {puntos}</p>
         <p>Filas eliminadas: {filasEliminadas}</p>
         <div>
