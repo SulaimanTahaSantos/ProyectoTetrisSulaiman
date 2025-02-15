@@ -8,6 +8,8 @@ import modelos from "../../lib/modelos";
 import nuevaPieza from "../../lib/nuevaPieza";
 import modeloPieza from "../../lib/class/modeloPieza";
 import GameOver from "../GameOver";
+import colorPieza from '../../lib/colorPieza';
+
 
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
@@ -30,6 +32,11 @@ const [tiempoRestante, setTiempoRestante] = useState(2500
 
 );
 const [filasEliminadas, setFilasEliminadas] = useState(0);
+const [piezaSiguiente, setPiezaSiguiente] = useState(() => {
+  const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
+  return nuevaPieza(0, columnaAleatoria); 
+});
+
 
   
  
@@ -252,58 +259,60 @@ const actualizarPieza = (nuevaPieza) => {
 
 
 
-  useEffect(() => {
-    pintarPieza(piezaActual);
-    setTiempoRestante(2.5);
+useEffect(() => {
+  pintarPieza(piezaActual);
+  setTiempoRestante(2.5);
 
-    const intervalId = setInterval(() => {
-      const nueva = new modeloPieza(
-        piezaActual.numero,
-        piezaActual.fila + 1,
-        piezaActual.columna
-      );
-      if (hayColision(nueva)) {
-        actualizarPieza(nueva);
-        console.log("colision detectada");
-      } else {
-        setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
-      }
-    }, 5000);
-
-    const countdownId = setInterval(() => {
-      setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 2500);
-
-    return () => {
-      clearInterval(intervalId);
-      clearInterval(countdownId);
-    };
-  }, [piezaActual]);
-
-
-  const bajar = () => {
-    const filaNueva = piezaActual.fila + 1; 
-  
-    const nuevaPiezaGenerada = new modeloPieza(
+  const intervalId = setInterval(() => {
+    const nueva = new modeloPieza(
       piezaActual.numero,
-      filaNueva,
-      piezaActual.columna,
-      piezaActual.angulo
+      piezaActual.fila + 1,
+      piezaActual.columna
     );
-  
-    if (filaNueva === 17 || !hayColision(nuevaPiezaGenerada)) {
-      setPuntos((prevPuntos) => prevPuntos + 50); 
-      console.log("Pieza ha llegado a la última fila. +50 puntos.", filaNueva);
-      console.log("Pieza ha colisionado. +50 puntos.", !hayColision(nuevaPiezaGenerada));
-  
-      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1)); 
-  
+    if (hayColision(nueva)) {
+      actualizarPieza(nueva);
+      console.log("colision detectada");
     } else {
-      setPuntos((prevPuntos) => prevPuntos + 10); 
-      console.log("Pieza ha bajado. +10 puntos.");
+      setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
     }
-    actualizarPieza(nuevaPiezaGenerada); 
+  }, 2500);
+
+  const countdownId = setInterval(() => {
+    setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
+  }, 2500);
+
+  return () => {
+    clearInterval(intervalId);
+    clearInterval(countdownId);
   };
+}, [piezaActual]);
+
+
+
+
+const bajar = () => {
+  const filaNueva = piezaActual.fila + 1;
+
+  const nuevaPiezaGenerada = new modeloPieza(
+    piezaActual.numero,
+    filaNueva,
+    piezaActual.columna,
+    piezaActual.angulo
+  );
+
+  if (filaNueva === 19 || !hayColision(nuevaPiezaGenerada)) {
+    setPuntos((prevPuntos) => prevPuntos + 50);
+
+    setPiezaActual(piezaSiguiente);
+    
+    setPiezaSiguiente(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
+  } else {
+    setPuntos((prevPuntos) => prevPuntos + 10);
+  }
+
+  actualizarPieza(nuevaPiezaGenerada);
+};
+
   
   
   
@@ -343,6 +352,23 @@ const actualizarPieza = (nuevaPieza) => {
 
       <Container>
         <h1 className="mt-5">Juego</h1>
+        <div style={{ border: "1px solid black", padding: "10px", margin: "10px", display: "inline-block" }}>
+  <h4>Siguiente Pieza</h4>
+  {piezaSiguiente && piezaSiguiente.matriz.map((fila, filaIndex) => (
+    <div key={filaIndex} style={{ display: "flex", justifyContent: "center" }}>
+      {fila.map((celda, celdaIndex) => (
+        <div key={celdaIndex} style={{
+          width: "20px",
+          height: "20px",
+          border: "1px solid black"
+        }}
+        className={`border ${celda === 0 ? 'bg-white' : colorPieza(celda)}`} 
+        ></div>
+      ))}
+    </div>
+  ))}
+</div>
+
         <Panel grid={arrayCasillas} />
         <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
         <p>Puntos actuales: {puntos}</p>
