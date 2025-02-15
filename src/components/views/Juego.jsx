@@ -300,7 +300,7 @@ const bajar = () => {
     piezaActual.angulo
   );
 
-  if (filaNueva === 19 || !hayColision(nuevaPiezaGenerada)) {
+  if (filaNueva === 21 || !hayColision(nuevaPiezaGenerada)) {
     setPuntos((prevPuntos) => prevPuntos + 50);
 
     setPiezaActual(piezaSiguiente);
@@ -344,6 +344,20 @@ const bajar = () => {
     };
   }, [piezaActual, arrayCasillas]);
 
+  const cambiarPieza = () => {
+    borrarPieza(piezaActual);
+    
+    setPiezaActual({ 
+      ...piezaSiguiente, 
+      fila: piezaActual.fila,  
+      columna: piezaActual.columna
+    });
+    
+    setPiezaSiguiente(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
+  };
+  
+  
+
 
   return (
     <>
@@ -352,7 +366,7 @@ const bajar = () => {
 
       <Container>
         <h1 className="mt-5">Juego</h1>
-        <div style={{ border: "1px solid black", padding: "10px", margin: "10px", display: "inline-block" }}>
+        <div onClick={cambiarPieza} style={{ border: "1px solid black", padding: "10px", margin: "10px", display: "inline-block" }}>
   <h4>Siguiente Pieza</h4>
   {piezaSiguiente && piezaSiguiente.matriz.map((fila, filaIndex) => (
     <div key={filaIndex} style={{ display: "flex", justifyContent: "center" }}>
