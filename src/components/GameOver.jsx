@@ -1,4 +1,4 @@
-// Toast.js
+
 import React from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
 

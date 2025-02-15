@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Row, Col, Button, Card } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";  
 import { usePartidas } from "../../context/PartidasContext";  
 import AppMenu from "../AppMenu";
@@ -370,42 +370,65 @@ const bajar = () => {
     <>
       <AppMenu />
       <GameOver show={gameOver} message="¡Has perdido la partida!" />
-
-      <Container>
-        <h1 className="mt-5">Juego</h1>
-        <div onClick={cambiarPieza} style={{ border: "1px solid black", padding: "10px", margin: "10px", display: "inline-block" }}>
-  <h4>Siguiente Pieza</h4>
-  {piezaSiguiente && piezaSiguiente.matriz.map((fila, filaIndex) => (
-    <div key={filaIndex} style={{ display: "flex", justifyContent: "center" }}>
-      {fila.map((celda, celdaIndex) => (
-        <div key={celdaIndex} style={{
-          width: "20px",
-          height: "20px",
-          border: "1px solid black"
-        }}
-        className={`border ${celda === 0 ? 'bg-white' : colorPieza(celda)}`} 
-        ></div>
-      ))}
-    </div>
-  ))}
-</div>
-
-        <Panel grid={arrayCasillas} />
-        <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
-        <p>velocidad de caida : {velocidadCaida}</p>
-        <p>Puntos actuales: {puntos}</p>
-        <p>Filas eliminadas: {filasEliminadas}</p>
-        <div>
-          <Button className="mt-3" disabled>
-            JUGAR (Inicia Automáticamente)
-          </Button>
-          <Button className="mt-3"  onClick={() => setGameOver(true)} >
-            perder
-          </Button>
-        </div>
+  
+      <Container className="py-5">
+        <h1 className="text-center mb-5">Tetris</h1>
+        <Row>
+          <Col md={8}>
+            <Card className="shadow-sm">
+              <Card.Body className="d-flex justify-content-center align-items-center">
+                <Panel grid={arrayCasillas} />
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="shadow-sm mb-4">
+              <Card.Body>
+                <h4 className="text-center mb-3">Siguiente Pieza</h4>
+                <div onClick={cambiarPieza} className="siguientePieza">
+                  {piezaSiguiente &&
+                    piezaSiguiente.matriz.map((fila, filaIndex) => (
+                      <div key={filaIndex} className="d-flex justify-content-center">
+                        {fila.map((celda, celdaIndex) => (
+                          <div
+                            key={celdaIndex}
+                            className={`celdasDeLaSiguientePieza ${celda === 0 ? "bg-light" : colorPieza(celda)}`}
+                          ></div>
+                        ))}
+                      </div>
+                    ))}
+                </div>
+              </Card.Body>
+            </Card>
+            <Card className="shadow-sm mb-4">
+              <Card.Body>
+                <h4 className="text-center mb-3">Estadísticas</h4>
+              
+                <p>
+                  <strong>Velocidad de caída:</strong> {velocidadCaida}
+                </p>
+                <p>
+                  <strong>Puntos actuales:</strong> {puntos}
+                </p>
+                <p>
+                  <strong>Filas eliminadas:</strong> {filasEliminadas}
+                </p>
+              </Card.Body>
+            </Card>
+            <div className="d-grid gap-2">
+              <Button variant="primary" size="lg" disabled>
+                JUGAR (Inicia Automáticamente)
+              </Button>
+              <Button variant="danger" size="lg" onClick={() => setGameOver(true)}>
+                Perder
+              </Button>
+            </div>
+          </Col>
+        </Row>
       </Container>
     </>
-  );
+  )
+  
 };
 
 export default Juego;
