@@ -35,6 +35,9 @@ let navigate = useNavigate();
                 <ListGroup.Item>
                   <strong>Descelerar las piezas:</strong> Usa la flecha hacia abajo para hacer que las piezas caigan más rápido.
                 </ListGroup.Item>
+                <ListGroup.Item>
+                  <strong>Cambiar de pieza: </strong> Si haces click en la pieza siguiente podras cambiarla.
+                </ListGroup.Item>
               </ListGroup>
 
               <div className="text-center mt-4">

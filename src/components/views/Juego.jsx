@@ -14,8 +14,16 @@ import colorPieza from '../../lib/colorPieza';
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
 const [piezaActual, setPiezaActual] = useState(() => {
-  const columnaAleatoria = Math.floor(Math.random() * 9) + 1;
-  const piezaGenerada = nuevaPieza(0, columnaAleatoria);
+  const generarColumnaValida = () => {
+    let columna;
+    do {
+      columna = Math.floor(Math.random() * 7) + 1; // Genera entre 1 y 7
+    } while (arrayCasillas[0][columna] === 1); 
+    return columna;
+  };
+  
+  
+  const piezaGenerada = nuevaPieza(0, generarColumnaValida());
 
   if (!piezaGenerada || !piezaGenerada.matriz) {
     console.error("La pieza no tiene una matriz válida.");
@@ -42,6 +50,9 @@ useEffect(() => {
     setVelocidadCaida(prevVel => Math.max(prevVel - 200, 500)); 
   }
 }, [filasEliminadas]);
+
+const [jugando, setJugando] = useState(false);
+
 
 
 
@@ -267,6 +278,8 @@ const actualizarPieza = (nuevaPieza) => {
 
 
 useEffect(() => {
+  if (!jugando) return;
+
   pintarPieza(piezaActual);
   setTiempoRestante(2.5);
 
@@ -278,7 +291,7 @@ useEffect(() => {
     );
     if (hayColision(nueva)) {
       actualizarPieza(nueva);
-      console.log("colision detectada");
+      console.log("Colisión detectada");
     } else {
       setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
     }
@@ -292,7 +305,8 @@ useEffect(() => {
     clearInterval(intervalId);
     clearInterval(countdownId);
   };
-}, [piezaActual, velocidadCaida]);
+}, [piezaActual, velocidadCaida, jugando]);
+
 
 
 
@@ -416,8 +430,8 @@ const bajar = () => {
               </Card.Body>
             </Card>
             <div className="d-grid gap-2">
-              <Button variant="primary" size="lg" disabled>
-                JUGAR (Inicia Automáticamente)
+              <Button variant="primary" size="lg" onClick={() => setJugando(true)}>
+                JUGAR
               </Button>
               <Button variant="danger" size="lg" onClick={() => setGameOver(true)}>
                 Perder

@@ -27,7 +27,7 @@ const Panel = ({ grid }) => {
               justifyContent: 'center',
             }}
           >
-            {cell}  
+             
           </div>
         ))
       )}

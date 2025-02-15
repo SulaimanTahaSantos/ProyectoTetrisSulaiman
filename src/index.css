@@ -78,8 +78,11 @@ button:focus-visible {
   }
   
   @media (max-width: 768px) {
-    .next-piece-cell {
+    .celdasDeLaSiguientePieza  {
       width: 20px;
       height: 20px;
     }
   }
+
+
+  
