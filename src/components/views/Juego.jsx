@@ -26,38 +26,43 @@ const [puntos, setPuntos] = useState(0);
 const [gameOver, setGameOver] = useState(false);
 const { partidas, registrarPartida } = usePartidas();  
 const navigate = useNavigate();  
+const [tiempoRestante, setTiempoRestante] = useState(2500
 
-
-
-
-  const [tiempoRestante, setTiempoRestante] = useState(2500);
+);
+const [filasEliminadas, setFilasEliminadas] = useState(0);
 
   
-  const borrarFilaLlena = () => {
-    const newArray = [...arrayCasillas];
-    
-    for (let fila = arrayCasillas.length - 1; fila >= 0; fila--) {
-      if (newArray[fila].every(celda => celda !== 0)) {
-        newArray[fila] = newArray[fila].map((celda, columnaIndex) => {
-          if (columnaIndex !== 0 && columnaIndex !== newArray[fila].length - 1) {
-            return (celda >= 2 && celda <= 8 ? 0 : celda);
-          }
-          return celda; 
-        });
-        
-        for (let i = fila - 1; i >= 0; i--) {
-          newArray[i + 1] = [...newArray[i]]; 
+ 
+const borrarFilaLlena = () => {
+  const newArray = [...arrayCasillas];
+  let filasEliminadasTemp = 0; 
+
+  for (let fila = arrayCasillas.length - 1; fila >= 0; fila--) {
+    if (newArray[fila].every(celda => celda !== 0)) {
+      filasEliminadasTemp++; 
+
+      newArray[fila] = newArray[fila].map((celda, columnaIndex) => {
+        if (columnaIndex !== 0 && columnaIndex !== newArray[fila].length - 1) {
+          return (celda >= 2 && celda <= 8 ? 0 : celda);
         }
-        
-        newArray[0] = newArray[0].map((celda, columnaIndex) => {
-          return (columnaIndex !== 0 && columnaIndex !== newArray[0].length - 1 ? 0 : celda);
-        });
+        return celda;
+      });
+
+      for (let i = fila - 1; i >= 0; i--) {
+        newArray[i + 1] = [...newArray[i]];
       }
+
+      newArray[0] = newArray[0].map((celda, columnaIndex) => {
+        return (columnaIndex !== 0 && columnaIndex !== newArray[0].length - 1 ? 0 : celda);
+      });
     }
-    
-    setArrayCasillas(newArray); 
-  };
-  
+  }
+  console.log("Filas eliminadas:", filasEliminadasTemp);
+
+  setFilasEliminadas(prev => prev + filasEliminadasTemp); 
+  setArrayCasillas(newArray);
+};
+ 
   
   
   const verificarGameOver = () => {
@@ -119,8 +124,12 @@ const navigate = useNavigate();
   
         const estaLibre =
           dentroDeLimites && (arrayCasillas[filaPos][columnaPos] === 0 || (arrayCasillas[filaPos][columnaPos] === columna));
+          console.log("Colisión detectada:", !estaLibre);
+          console.log("Dentro de límites:", dentroDeLimites);
+         
   
         return estaLibre;
+       
       })
     );
   };
@@ -232,15 +241,15 @@ const moverDra = () => {
 
 const actualizarPieza = (nuevaPieza) => {
   borrarPieza(piezaActual);
-  if (hayColision(nuevaPieza)) {
-    setPiezaActual(nuevaPieza); 
-    pintarPieza(nuevaPieza); 
-  } else {
-    pintarPieza(piezaActual); 
-  }
-  borrarFilaLlena();
 
+  if (hayColision(nuevaPieza)) {
+    setPiezaActual(nuevaPieza);
+  } else {
+    pintarPieza(piezaActual);
+    borrarFilaLlena(); 
+  }
 };
+
 
 
   useEffect(() => {
@@ -255,14 +264,15 @@ const actualizarPieza = (nuevaPieza) => {
       );
       if (hayColision(nueva)) {
         actualizarPieza(nueva);
+        console.log("colision detectada");
       } else {
         setPiezaActual(nuevaPieza(0, Math.floor(Math.random() * 9) + 1));
       }
-    }, 2500);
+    }, 5000);
 
     const countdownId = setInterval(() => {
       setTiempoRestante((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
+    }, 2500);
 
     return () => {
       clearInterval(intervalId);
@@ -336,6 +346,7 @@ const actualizarPieza = (nuevaPieza) => {
         <Panel grid={arrayCasillas} />
         <p>Tiempo para la próxima pieza: {tiempoRestante} s</p>
         <p>Puntos actuales: {puntos}</p>
+        <p>Filas eliminadas: {filasEliminadas}</p>
         <div>
           <Button className="mt-3" disabled>
             JUGAR (Inicia Automáticamente)
