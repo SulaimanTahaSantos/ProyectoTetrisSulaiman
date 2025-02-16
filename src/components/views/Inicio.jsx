@@ -27,7 +27,7 @@ let navigate = useNavigate();
                   <strong>Movimiento de las piezas:</strong> Las piezas caen de forma automática desde la parte superior de la pantalla.
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <strong>Rotar piezas:</strong> Usa la tecla de rotación para cambiar la orientación de las piezas.
+                  <strong>Rotar piezas:</strong> Usa la tecla de de flecha arriba para cambiar la orientación de las piezas.
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <strong>Mover las piezas:</strong> Usa las teclas de flecha izquierda y derecha para mover las piezas lateralmente.
