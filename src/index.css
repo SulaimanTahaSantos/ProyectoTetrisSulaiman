@@ -59,3 +59,30 @@ button:focus-visible {
         background-color: #f9f9f9;
     }
 }
+.siguientePieza {
+    display: inline-block;
+    border: 2px solid #dee2e6;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-left: 130px;
+  
+
+  }
+  
+  .celdasDeLaSiguientePieza {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #dee2e6;
+    margin: 1px;
+  }
+  
+  @media (max-width: 768px) {
+    .celdasDeLaSiguientePieza  {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+
+  

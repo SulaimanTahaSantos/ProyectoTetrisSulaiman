@@ -1,9 +1,12 @@
 import React from "react";
 import { Container, Row, Col, Card, ListGroup, Button, Image } from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AppMenu from "../AppMenu";
 
 const Inicio = () => {
+let navigate = useNavigate();
+
   return (
     <>
      <AppMenu/>
@@ -32,6 +35,9 @@ const Inicio = () => {
                 <ListGroup.Item>
                   <strong>Descelerar las piezas:</strong> Usa la flecha hacia abajo para hacer que las piezas caigan más rápido.
                 </ListGroup.Item>
+                <ListGroup.Item>
+                  <strong>Cambiar de pieza: </strong> Si haces click en la pieza siguiente podras cambiarla.
+                </ListGroup.Item>
               </ListGroup>
 
               <div className="text-center mt-4">
@@ -44,7 +50,7 @@ const Inicio = () => {
               </div>
 
               <div className="text-center mt-4">
-                <Button variant="primary" size="lg">
+                <Button variant="primary" size="lg" onClick={() => navigate('/Juego')}>
                   Empezar Juego
                 </Button>
               </div>
