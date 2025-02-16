@@ -337,7 +337,7 @@ const bajar = () => {
     piezaActual.angulo
   );
 
-  if (filaNueva === 21 || !hayColision(nuevaPiezaGenerada)) {
+  if (filaNueva === 19 || !hayColision(nuevaPiezaGenerada)) {
     setPuntos((prevPuntos) => prevPuntos + 50);
 
     setPiezaActual(piezaSiguiente);
