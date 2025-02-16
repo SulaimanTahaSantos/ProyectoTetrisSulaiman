@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Card } from "react-bootstrap"
+import { Container, Row, Col, Button, Card, Modal } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";  
 import { usePartidas } from "../../context/PartidasContext";  
 import AppMenu from "../AppMenu";
@@ -53,6 +53,8 @@ useEffect(() => {
 }, [filasEliminadas]);
 
 const [jugando, setJugando] = useState(false);
+const [nick, setNick] = useState("");
+const [mostrarInputNick, setMostrarInputNick] = useState(false);
 
 
 let sonidos = {
@@ -101,33 +103,28 @@ const borrarFilaLlena = () => {
       setGameOver(true);
     }
   }
-  useEffect(() => {
+ 
+  useEffect(() => { 
     if (gameOver) {
       sonidos.sonidoPerder.play();
-      setTimeout(() => {
-        const existingGame = partidas.some(partida =>
-          partida.name === "Jugador" &&
-          partida.point === puntos &&
-          partida.releaseDate === new Date().toLocaleDateString()
-        );
-        
-        if (!existingGame) {
-          registrarPartida({
-            id: Date.now(),  
-            name: "Jugador",  
-            title: "Juego Terminado",  
-            point: puntos,  
-            releaseDate: new Date().toLocaleDateString(),  
-          });
-        }
-        
-        if (location.pathname === "/Partidas") {
-          window.location.reload();  
-        }
-        navigate("/Partidas");  
-      }, 2000);  
+      setMostrarInputNick(true); // Muestra el input cuando termina la partida
     }
-  }, [gameOver, puntos, registrarPartida, navigate, partidas]);
+  }, [gameOver, puntos, registrarPartida, navigate, partidas]);;
+  
+  const guardarPartida = () => {
+    if (!nick.trim()) return; // Evita guardar sin Nick
+  
+    registrarPartida({
+      id: Date.now(),
+      name: nick,
+      title: "Juego Terminado",
+      point: puntos,
+      releaseDate: new Date().toLocaleDateString(),
+    });
+  
+    navigate("/Partidas");
+  };
+  
   
   
   
@@ -403,7 +400,29 @@ const bajar = () => {
     <>
       <AppMenu />
       <GameOver show={gameOver} message="¡Has perdido la partida!" />
-  
+      <Modal show={gameOver && mostrarInputNick} onHide={() => setMostrarInputNick(false)} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>¡Juego terminado!</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Ingresa tu Nick"
+          value={nick}
+          onChange={(e) => setNick(e.target.value)}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => setMostrarInputNick(false)}>
+          Cerrar
+        </Button>
+        <Button variant="primary" onClick={guardarPartida}>
+          Guardar Partida
+        </Button>
+      </Modal.Footer>
+    </Modal>
+
       <Container className="py-5">
         <h1 className="text-center mb-5">Tetris</h1>
         <Row>
