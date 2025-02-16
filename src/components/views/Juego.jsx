@@ -11,6 +11,7 @@ import GameOver from "../GameOver";
 import colorPieza from '../../lib/colorPieza';
 
 
+
 const Juego = () => {
   const [arrayCasillas, setArrayCasillas] = useState(modelos.matriz);
 const [piezaActual, setPiezaActual] = useState(() => {
@@ -54,10 +55,14 @@ useEffect(() => {
 const [jugando, setJugando] = useState(false);
 
 
+let sonidos = {
+  sonidoMovimiento: new Audio('/src/sounds/move.mp3'),
+  sonidoColision: new Audio('/src/sounds/collision.wav'),
+  sonidoBorrarFila: new Audio('/src/sounds/filaEliminada.wav'),
+  sonidoPerder: new Audio('/src/sounds/gameOver.mp3'),
+  musicaFondo: new Audio('/src/sounds/backgroundMusic.mp3')
+};
 
-
-  
- 
 const borrarFilaLlena = () => {
   const newArray = [...arrayCasillas];
   let filasEliminadasTemp = 0; 
@@ -86,6 +91,7 @@ const borrarFilaLlena = () => {
 
   setFilasEliminadas(prev => prev + filasEliminadasTemp); 
   setArrayCasillas(newArray);
+  sonidos.sonidoBorrarFila.play()
 };
  
   
@@ -97,6 +103,7 @@ const borrarFilaLlena = () => {
   }
   useEffect(() => {
     if (gameOver) {
+      sonidos.sonidoPerder.play();
       setTimeout(() => {
         const existingGame = partidas.some(partida =>
           partida.name === "Jugador" &&
@@ -219,6 +226,7 @@ const girar = () => {
     actualizarPieza(nueva);
     setPuntos((prevPuntos) => prevPuntos + 20); 
     console.log("Pieza se ha girado. +20 puntos.");
+    sonidos.sonidoMovimiento.play();
 
   }
 };
@@ -235,6 +243,7 @@ const girar = () => {
       actualizarPieza(nueva);
       setPuntos((prevPuntos) => prevPuntos + 10); 
       console.log("Pieza se ha movido a la izquierda. +10 puntos.");
+      sonidos.sonidoMovimiento.play();
 
     }
    
@@ -256,6 +265,7 @@ const moverDra = () => {
     actualizarPieza(nueva);
     setPuntos((prevPuntos) => prevPuntos + 10); 
     console.log("Pieza se ha movido a la derecha. +10 puntos.");
+    sonidos.sonidoMovimiento.play();
 
   }
 
@@ -274,6 +284,15 @@ const actualizarPieza = (nuevaPieza) => {
     borrarFilaLlena(); 
   }
 };
+
+useEffect(() => {
+  if (jugando) {
+    sonidos.musicaFondo.play(); 
+    sonidos.musicaFondo.loop = true;
+  } else {
+    sonidos.musicaFondo.pause(); 
+  }
+}, [jugando]);
 
 
 
