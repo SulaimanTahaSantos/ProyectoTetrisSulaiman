@@ -103,16 +103,17 @@ const borrarFilaLlena = () => {
       setGameOver(true);
     }
   }
+  
  
   useEffect(() => { 
     if (gameOver) {
       sonidos.sonidoPerder.play();
-      setMostrarInputNick(true); // Muestra el input cuando termina la partida
+      setMostrarInputNick(true); 
     }
   }, [gameOver, puntos, registrarPartida, navigate, partidas]);;
   
   const guardarPartida = () => {
-    if (!nick.trim()) return; // Evita guardar sin Nick
+    if (!nick.trim()) return; 
   
     registrarPartida({
       id: Date.now(),
@@ -294,7 +295,7 @@ useEffect(() => {
 
 
 useEffect(() => {
-  if (!jugando) return;
+  if (!jugando ) return;
 
   pintarPieza(piezaActual);
   setTiempoRestante(2.5);
